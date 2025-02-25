@@ -8,7 +8,9 @@ embed-resources: true
 
 ```{r}
 library(tidyverse)
+library(knitr)
 life_exp <- read.csv("../stat331-FinalProject/lex.csv")
+gdp <- read.csv("../stat331-FinalProject/gdp_pcap.csv")
 ```
 
 # Cleaning the Data 
@@ -18,8 +20,26 @@ life_exp_clean <- life_exp |>
   pivot_longer(
     cols = X1800:X2100,
     names_to = "year",
-    values_to = "life_expectancy"
-  ) |>
-  mutate(year = str_sub(year, start = 2))
+    values_to = "life_expectancy") |>
+  mutate(year = str_sub(year, start = 2),
+         year = as.numeric(year))
+
+gdp_clean <- gdp |>
+  mutate(across(.cols = X1800:X2100,
+                .fns = ~as.character(.x))) |>
+  pivot_longer(
+    cols = X1800:X2100,
+    names_to = "year",
+    values_to = "gdp") |>
+  mutate(year = str_sub(year, start = 2),
+         year = as.numeric(year))
+
+complete <- life_exp_clean |>
+  full_join(gdp_clean, 
+            join_by(country == country,
+                    year == year))
+
+head(complete) |>
+  kable()
 
 ```
