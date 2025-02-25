@@ -16,9 +16,10 @@ child_mort <- read.csv("../stat331-FinalProject/child_mortality_0_5_year_olds_dy
 
 ```{r}
 life_exp_clean <- life_exp |>
-  pivot_longer(cols = 2:203,
+  pivot_longer(cols = X1800:X2100,
                names_to = "year",
-               values_to = "life_expectancy")
+               values_to = "life_expectancy") |>
+  mutate()
 
 ```
 
