@@ -1,0 +1,15 @@
+---
+title: "Final Project Stat331"
+format: html
+embed-resources: true
+---
+
+# Loading Packages and data
+
+```{r}
+library(tidyverse)
+life_exp <- read.csv("../stat331-FinalProject/lex.csv")
+child_mort <- read.csv("../stat331-FinalProject/child_mortality_0_5_year_olds_dying_per_1000_born.csv")
+```
+
+
