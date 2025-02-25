@@ -9,7 +9,6 @@ embed-resources: true
 ```{r}
 library(tidyverse)
 life_exp <- read.csv("../stat331-FinalProject/lex.csv")
-child_mort <- read.csv("../stat331-FinalProject/child_mortality_0_5_year_olds_dying_per_1000_born.csv")
 ```
 
 # Cleaning the Data 
