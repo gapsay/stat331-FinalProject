@@ -19,15 +19,15 @@ execute:
 ```{r}
 library(tidyverse)
 library(knitr)
-life_exp_data <- read.csv("../stat331-FinalProject/lex.csv")
-gdp_data <- read.csv("../stat331-FinalProject/gdp_pcap.csv")
+life_exp_data_raw <- read.csv("../stat331-FinalProject/lex.csv")
+gdp_data_raw <- read.csv("../stat331-FinalProject/gdp_pcap.csv")
 ```
 
 # Cleaning the Data 
 
 ```{r}
 # pivot year columns to a single year and life expectancy column
-life_exp_data <- life_exp_data |>
+life_exp_data <- life_exp_data_raw |>
   pivot_longer(
     cols = X1800:X2100,
     names_to = "year",
@@ -39,7 +39,7 @@ life_exp_data <- life_exp_data |>
   )
 
 # pivot year columns to a single year and gdp column
-gdp_data <- gdp_data |>
+gdp_data <- gdp_data_raw |>
   mutate(across(
     .cols = X1800:X2100,
     .fns = ~ as.character(.x)
