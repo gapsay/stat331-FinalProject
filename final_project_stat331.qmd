@@ -53,7 +53,8 @@ complete_data <- life_exp_data |>
       country == country,
       year == year
     )
-  )
+  ) |> 
+  na.omit()
 
 head(complete_data) |>
   kable()
