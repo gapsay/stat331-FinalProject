@@ -1,7 +1,17 @@
 ---
 title: "Final Project Stat331"
-format: html
-embed-resources: true
+format: 
+  html:
+    code-tools: true
+    toc: true
+    embed-resources: true
+    html-table-processing: none
+editor: source
+execute: 
+  error: true
+  echo: true
+  message: false
+  warning: false
 ---
 
 # Loading Packages and data
