@@ -26,6 +26,16 @@ gdp_data_raw <- read.csv("../stat331-FinalProject/gdp_pcap.csv")
 # Cleaning the Data 
 
 ```{r}
+clean_year <- function(str) {
+  str <- case_when(str_detect(str, "k$") ~ 
+                     as.numeric(str_replace_all(str, "k$", "")) * 1000, 
+                   .default = as.numeric(str))
+  return(str)
+}
+```
+
+
+```{r}
 # pivot year columns to a single year and life expectancy column
 life_exp_data <- life_exp_data_raw |>
   pivot_longer(
@@ -42,8 +52,7 @@ life_exp_data <- life_exp_data_raw |>
 gdp_data <- gdp_data_raw |>
   mutate(across(
     .cols = X1800:X2100,
-    .fns = ~ as.character(.x)
-  )) |>
+    .fns = ~ clean_year(.x))) |>
   pivot_longer(
     cols = X1800:X2100,
     names_to = "year",
