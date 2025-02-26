@@ -55,7 +55,7 @@ complete_data <- life_exp_data |>
     )
   )
 
-head(complete) |>
+head(complete_data) |>
   kable()
 
 ```
