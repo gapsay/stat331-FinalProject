@@ -3085,7 +3085,14 @@ vertical-align: -.125em;
    
   <ul>
   <li><a href="#loading-packages-and-data" id="toc-loading-packages-and-data" class="nav-link active" data-scroll-target="#loading-packages-and-data">Loading Packages and data</a></li>
-  <li><a href="#cleaning-the-data" id="toc-cleaning-the-data" class="nav-link" data-scroll-target="#cleaning-the-data">Cleaning the Data</a></li>
+  <li><a href="#cleaning-the-data" id="toc-cleaning-the-data" class="nav-link" data-scroll-target="#cleaning-the-data">Cleaning the Data</a>
+  <ul class="collapse">
+  <li><a href="#describing-the-data" id="toc-describing-the-data" class="nav-link" data-scroll-target="#describing-the-data">Describing the Data</a>
+  <ul class="collapse">
+  <li><a href="#data-sourcing" id="toc-data-sourcing" class="nav-link" data-scroll-target="#data-sourcing">Data Sourcing</a></li>
+  <li><a href="#data-cleaning" id="toc-data-cleaning" class="nav-link" data-scroll-target="#data-cleaning">Data Cleaning</a></li>
+  </ul></li>
+  </ul></li>
   </ul>
 </nav>
 </div>
@@ -3222,8 +3229,25 @@ vertical-align: -.125em;
 </table>
 </div>
 </div>
+<section id="describing-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="describing-the-data">Describing the Data</h2>
+<p>Both the <a href="https://www.gapminder.org/data/">life expectancy</a> and the <a href="https://www.gapminder.org/data/">gross domestic product</a> (GDP) data were sourced from <a href="https://www.gapminder.org/about/about-gapminder/">Gapminder</a>, a non-profit organization whose mission “is to fight devastating ignorance with a fact-based world view everyone could understand.” Their site provides data sets collected from many reputable sources and interactive visualizations on important world topics.</p>
+<section id="data-sourcing" class="level3">
+<h3 class="anchored" data-anchor-id="data-sourcing">Data Sourcing</h3>
+<p>The GDP data was sourced from using data from the Madison Project Database (MPD) and Penn World Table (PWT). This data set contains information on gross domestic product (GDP) per person adjusted for differences in purchasing power in international dollars, and fixed 2017 prices. GDP per capita measures the value of everything a country produces during a year, divided by the number of people. We pivoted the data to have columns containing the country, year, and GDP of interest.</p>
+<p><strong>GDP Info from:</strong> <a href="https://www.gapminder.org/data/documentation/gd001/">https://www.gapminder.org/data/documentation/gd001/</a></p>
+<p>The life expectancy data contains information about the life expectancy for 196 countries from the year 1800 to 2100. It provides the life expectancy in years for each country within the set. For the period from 1800 to 1970, the data was sourced from Gapminder’s main source v7: by Mattias Lindgren. Data for 1950-2019 was from the Global Burden of Disease Study 2019, which has 1950-2019 from the IHME. For 2020-2100, Gapminder used UN forecasts from the World Population Prospects 2022.</p>
+<p><strong>Life Expectancy Info from:</strong> <a href="https://www.gapminder.org/data/documentation/gd004">https://www.gapminder.org/data/documentation/gd004</a></p>
+</section>
+<section id="data-cleaning" class="level3">
+<h3 class="anchored" data-anchor-id="data-cleaning">Data Cleaning</h3>
+<p>In order to clean the data, we transformed each of the individual year columns into one singular column, so that the dataset would be easier to read. As a result, each observation consists of one country and year,with the corresponding life expectancy.</p>
+<p>The raw GDP data is similar to the life expectancy data in that each year has its own column. So we transformed the data in a similar way, making year its own column with its corresponding GDP. In addition, we had to figure out a way to convert GDP values into numeric form. Some values in the raw dataset included a “k” suffix to represent thousands (e.g., 10,000 to 10k). To keep values constant, we created a function that converts these abbreviated values into their full numeric form, allowing for accurate numeric comparisons. Without this step, any observations containing a “k” would be converted to <code>NA</code>, potentially affecting later analysis.</p>
+<p>After cleaning up each data set, we had to join the two together by our observational unit, country. We hypothesize that as GDP increases, life expectancy will also begin to increase, as a higher GDP correlates to better infrastructure and more/better access to healthcare and medicine.</p>
 <!-- -->
 
+</section>
+</section>
 </section>
 
 </main>
@@ -3724,7 +3748,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>gdp_data_raw <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;../stat331-FinalProject/gdp_pcap.csv&quot;</span>)</span>
 <span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="fu"># Cleaning the Data </span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="fu"># Cleaning the Data</span></span>
 <span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>clean_year <span class="ot">&lt;-</span> <span class="cf">function</span>(str) {</span>
@@ -3735,51 +3759,72 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="co"># pivot year columns to a single year and life expectancy column</span></span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>life_exp_data <span class="ot">&lt;-</span> life_exp_data_raw <span class="sc">|&gt;</span></span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
-<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> X1800<span class="sc">:</span>X2100,</span>
-<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">&quot;year&quot;</span>,</span>
-<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">&quot;life_expectancy&quot;</span></span>
-<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>    <span class="at">year =</span> <span class="fu">str_sub</span>(year, <span class="at">start =</span> <span class="dv">2</span>),</span>
-<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">year =</span> <span class="fu">as.factor</span>(year)</span>
-<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a><span class="co"># pivot year columns to a single year and gdp column</span></span>
-<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>gdp_data <span class="ot">&lt;-</span> gdp_data_raw <span class="sc">|&gt;</span></span>
-<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(</span>
-<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>    <span class="at">.cols =</span> X1800<span class="sc">:</span>X2100,</span>
-<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>    <span class="at">.fns =</span> <span class="sc">~</span> <span class="fu">clean_year</span>(.x))) <span class="sc">|&gt;</span></span>
-<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
-<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> X1800<span class="sc">:</span>X2100,</span>
-<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">&quot;year&quot;</span>,</span>
-<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">&quot;gdp&quot;</span></span>
-<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>    <span class="at">year =</span> <span class="fu">str_sub</span>(year, <span class="at">start =</span> <span class="dv">2</span>),</span>
-<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>    <span class="at">year =</span> <span class="fu">as.factor</span>(year),</span>
-<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>    <span class="at">gdp =</span> <span class="fu">as.numeric</span>(gdp)</span>
-<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a><span class="co"># join both tables by country and year</span></span>
-<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a>complete_data <span class="ot">&lt;-</span> life_exp_data <span class="sc">|&gt;</span></span>
-<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a>  <span class="fu">full_join</span>(</span>
-<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a>    gdp_data,</span>
-<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a>    <span class="fu">join_by</span>(</span>
-<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a>      country <span class="sc">==</span> country,</span>
-<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a>      year <span class="sc">==</span> year</span>
-<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na.omit</span>()</span>
-<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(complete_data) <span class="sc">|&gt;</span></span>
-<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span>
-<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="co"># pivot year columns to a single year and life expectancy column</span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>life_exp_data <span class="ot">&lt;-</span> life_exp_data_raw <span class="sc">|&gt;</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> X1800<span class="sc">:</span>X2100,</span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">&quot;year&quot;</span>,</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">&quot;life_expectancy&quot;</span></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">year =</span> <span class="fu">str_sub</span>(year, <span class="at">start =</span> <span class="dv">2</span>),</span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>    <span class="at">year =</span> <span class="fu">as.factor</span>(year)</span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a><span class="co"># pivot year columns to a single year and gdp column</span></span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>gdp_data <span class="ot">&lt;-</span> gdp_data_raw <span class="sc">|&gt;</span></span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(</span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>    <span class="at">.cols =</span> X1800<span class="sc">:</span>X2100,</span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>    <span class="at">.fns =</span> <span class="sc">~</span> <span class="fu">clean_year</span>(.x))) <span class="sc">|&gt;</span></span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> X1800<span class="sc">:</span>X2100,</span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">&quot;year&quot;</span>,</span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">&quot;gdp&quot;</span></span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a>    <span class="at">year =</span> <span class="fu">str_sub</span>(year, <span class="at">start =</span> <span class="dv">2</span>),</span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>    <span class="at">year =</span> <span class="fu">as.factor</span>(year),</span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>    <span class="at">gdp =</span> <span class="fu">as.numeric</span>(gdp)</span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a><span class="co"># join both tables by country and year</span></span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a>complete_data <span class="ot">&lt;-</span> life_exp_data <span class="sc">|&gt;</span></span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a>  <span class="fu">full_join</span>(</span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a>    gdp_data,</span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a>    <span class="fu">join_by</span>(</span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a>      country <span class="sc">==</span> country,</span>
+<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a>      year <span class="sc">==</span> year</span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na.omit</span>()</span>
+<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(complete_data) <span class="sc">|&gt;</span></span>
+<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span>
+<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a><span class="fu">## Describing the Data</span></span>
+<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a>Both the <span class="co">[</span><span class="ot">life expectancy</span><span class="co">](https://www.gapminder.org/data/)</span> and the <span class="co">[</span><span class="ot">gross domestic product</span><span class="co">](https://www.gapminder.org/data/)</span> (GDP) data were sourced from <span class="co">[</span><span class="ot">Gapminder</span><span class="co">](https://www.gapminder.org/about/about-gapminder/)</span>, a non-profit organization whose mission “is to fight devastating ignorance with a fact-based world view everyone could understand.” Their site provides data sets collected from many reputable sources and interactive visualizations on important world topics.</span>
+<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a><span class="fu">### Data Sourcing</span></span>
+<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a>The GDP data was sourced from using data from the Madison Project Database (MPD) and Penn World Table (PWT). This data set contains information on gross domestic product (GDP) per person adjusted for differences in purchasing power in international dollars, and fixed 2017 prices. GDP per capita measures the value of everything a country produces during a year, divided by the number of people. We pivoted the data to have columns containing the country, year, and GDP of interest.</span>
+<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-96"><a href="#cb4-96" aria-hidden="true" tabindex="-1"></a>**GDP Info from:** <span class="co">[</span><span class="ot">https://www.gapminder.org/data/documentation/gd001/</span><span class="co">](https://www.gapminder.org/data/documentation/gd001/)</span></span>
+<span id="cb4-97"><a href="#cb4-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-98"><a href="#cb4-98" aria-hidden="true" tabindex="-1"></a>The life expectancy data contains information about the life expectancy for 196 countries from the year 1800 to 2100. It provides the life expectancy in years for each country within the set. For the period from 1800 to 1970, the data was sourced from Gapminder’s main source v7: by Mattias Lindgren. Data for 1950-2019 was from the Global Burden of Disease Study 2019, which has 1950-2019 from the IHME. For 2020-2100, Gapminder used UN forecasts from the World Population Prospects 2022.</span>
+<span id="cb4-99"><a href="#cb4-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-100"><a href="#cb4-100" aria-hidden="true" tabindex="-1"></a>**Life Expectancy Info from:** <span class="co">[</span><span class="ot">https://www.gapminder.org/data/documentation/gd004</span><span class="co">](https://www.gapminder.org/data/documentation/gd004)</span></span>
+<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-102"><a href="#cb4-102" aria-hidden="true" tabindex="-1"></a><span class="fu">### Data Cleaning</span></span>
+<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a>In order to clean the data, we transformed each of the individual year columns into one singular column, so that the dataset would be easier to read. As a result, each observation consists of one country and year,with the corresponding life expectancy.</span>
+<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a>The raw GDP data is similar to the life expectancy data in that each year has its own column. So we transformed the data in a similar way, making year its own column with its corresponding GDP. In addition, we had to figure out a way to convert GDP values into numeric form. Some values in the raw dataset included a “k” suffix to represent thousands (e.g., 10,000 to 10k). To keep values constant, we created a function that converts these abbreviated values into their full numeric form, allowing for accurate numeric comparisons. Without this step, any observations containing a “k” would be converted to <span class="in">`NA`</span>, potentially affecting later analysis.</span>
+<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-108"><a href="#cb4-108" aria-hidden="true" tabindex="-1"></a>After cleaning up each data set, we had to join the two together by our observational unit, country. We hypothesize that as GDP increases, life expectancy will also begin to increase, as a higher GDP correlates to better infrastructure and more/better access to healthcare and medicine.</span>
 </code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
