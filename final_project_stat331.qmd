@@ -37,9 +37,11 @@ In the raw GDP dataset, some values included a “k” suffix to represent thous
 
 ```{r}
 clean_year <- function(str) {
-  str <- case_when(str_detect(str, "k$") ~ 
-                     as.numeric(str_replace_all(str, "k$", "")) * 1000, 
-                   .default = as.numeric(str))
+  str <- case_when(
+    str_detect(str, "k$") ~
+      as.numeric(str_replace_all(str, "k$", "")) * 1000,
+    .default = as.numeric(str)
+  )
   return(str)
 }
 ```
@@ -53,11 +55,15 @@ The life expectancy data contains information about the life expectancy for 196 
 ```{r}
 # pivot year columns to a single year and life expectancy column
 lex <- lex_raw |>
-  pivot_longer(cols = X1800:X2100, 
-               names_to = "year", 
-               values_to = "life_expectancy") |> 
-  mutate(year = str_sub(year, start = 2), 
-         year = as.factor(year))
+  pivot_longer(
+    cols = X1800:X2100,
+    names_to = "year",
+    values_to = "life_expectancy"
+  ) |>
+  mutate(
+    year = str_sub(year, start = 2),
+    year = as.factor(year)
+  )
 ```
 
 The GDP data was obtained from the Madison Project Database (MPD) and Penn World Table (PWT). This data set contains information on gross domestic product (GDP) per person adjusted for differences in purchasing power in international dollars, and fixed 2017 prices. GDP per capita measures the value of everything a country produces during a year, divided by the number of people. We transformed the data to have columns containing the country, year, and GDP of interest.
@@ -67,14 +73,20 @@ The GDP data was obtained from the Madison Project Database (MPD) and Penn World
 ```{r}
 # pivot year columns to a single year and gdp column
 gdp_pcap <- gdp_pcap_raw |>
-  mutate(across(.cols = X1800:X2100, 
-                .fns = ~ clean_year(.x))) |> 
-  pivot_longer(cols = X1800:X2100, 
-               names_to = "year", 
-               values_to = "gdp") |> 
-  mutate(year = str_sub(year, start = 2), 
-         year = as.factor(year), 
-         gdp = as.numeric(gdp))
+  mutate(across(
+    .cols = X1800:X2100,
+    .fns = ~ clean_year(.x)
+  )) |>
+  pivot_longer(
+    cols = X1800:X2100,
+    names_to = "year",
+    values_to = "gdp"
+  ) |>
+  mutate(
+    year = str_sub(year, start = 2),
+    year = as.factor(year),
+    gdp = as.numeric(gdp)
+  )
 ```
 
 We transformed each of the individual year columns into one singular column so that the dataset would be easier to read. As a result, each observation consists of one country and year, with the corresponding life expectancy. The raw GDP data is similar to the life expectancy data in that each year has its own column. So we transformed the data in a similar way, making year its own column with its corresponding GDP. 
@@ -83,10 +95,14 @@ We transformed each of the individual year columns into one singular column so t
 
 ```{r}
 # join both tables by country and year
-gdp_lex <- lex |> 
-  full_join(gdp_pcap, 
-            join_by(country == country, 
-                    year == year)) |> 
+gdp_lex <- lex |>
+  full_join(
+    gdp_pcap,
+    join_by(
+      country == country,
+      year == year
+    )
+  ) |>
   na.omit()
 
 head(gdp_lex) |>
