@@ -3123,7 +3123,7 @@ vertical-align: -.125em;
 
 <section id="project-proposal-data" class="level1">
 <h1>1 Project Proposal + Data</h1>
-<p>Both the <a href="https://www.gapminder.org/data/">life expectancy</a> and the <a href="https://www.gapminder.org/data/">gross domestic product</a> (GDP) data were sourced from <a href="https://www.gapminder.org/about/about-gapminder/">Gapminder</a>, a non-profit organization whose mission “is to fight devastating ignorance with a fact-based world view everyone could understand.” Their site provides data sets collected from many reputable sources and interactive visualizations on important world topics.</p>
+<p>This analysis utilizes the <a href="https://www.gapminder.org/data/">life expectancy</a> and the <a href="https://www.gapminder.org/data/">gross domestic product</a> (GDP) datasets sourced <a href="https://www.gapminder.org/about/about-gapminder/">Gapminder</a>, a non-profit organization whose mission “is to fight devastating ignorance with a fact-based world view everyone could understand.” Their site provides data sets collected from many reputable sources and interactive visualizations on important world topics.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -3133,7 +3133,7 @@ vertical-align: -.125em;
 </div>
 <section id="data-cleaning" class="level2">
 <h2 class="anchored" data-anchor-id="data-cleaning">1.1 Data Cleaning</h2>
-<p>In the raw GDP dataset, some values included a “k” suffix to represent thousands of dollars (e.g., 10,000 to 10k). The first step is to figure out a way to convert GDP values into numeric form. To keep values constant, we created a function that converts these abbreviated values into their full numeric form, allowing for accurate numeric comparisons. Without this step, any observations containing a “k” would be converted to <code>NA</code>, potentially affecting later analysis.</p>
+<p>In the raw GDP dataset, some values included a “k” suffix to represent thousands of dollars (e.g., 10,000 to 10k). The first step is to figure out a way to convert GDP values into numeric form. To keep values constant, we created a function that converts these abbreviated values into their full numeric form, allowing for accurate numeric comparisons. Without this step, any observations containing a “k” would be dropped, leaving it empty and could potentially affecting later analysis.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -3752,7 +3752,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="fu"># 1 Project Proposal + Data</span></span>
 <span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>Both the <span class="co">[</span><span class="ot">life expectancy</span><span class="co">](https://www.gapminder.org/data/)</span> and the <span class="co">[</span><span class="ot">gross domestic product</span><span class="co">](https://www.gapminder.org/data/)</span> (GDP) data were sourced from <span class="co">[</span><span class="ot">Gapminder</span><span class="co">](https://www.gapminder.org/about/about-gapminder/)</span>, a non-profit organization whose mission “is to fight devastating ignorance with a fact-based world view everyone could understand.” Their site provides data sets collected from many reputable sources and interactive visualizations on important world topics.</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>This analysis utilizes the <span class="co">[</span><span class="ot">life expectancy</span><span class="co">](https://www.gapminder.org/data/)</span> and the <span class="co">[</span><span class="ot">gross domestic product</span><span class="co">](https://www.gapminder.org/data/)</span> (GDP) datasets sourced <span class="co">[</span><span class="ot">Gapminder</span><span class="co">](https://www.gapminder.org/about/about-gapminder/)</span>, a non-profit organization whose mission “is to fight devastating ignorance with a fact-based world view everyone could understand.” Their site provides data sets collected from many reputable sources and interactive visualizations on important world topics.</span>
 <span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="in">```{r data}</span></span>
 <span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="in">lex_raw &lt;- read.csv(&quot;../stat331-FinalProject/lex.csv&quot;)</span></span>
@@ -3761,7 +3761,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1.1 Data Cleaning</span></span>
 <span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>In the raw GDP dataset, some values included a “k” suffix to represent thousands of dollars (e.g., 10,000 to 10k). The first step is to figure out a way to convert GDP values into numeric form. To keep values constant, we created a function that converts these abbreviated values into their full numeric form, allowing for accurate numeric comparisons. Without this step, any observations containing a “k” would be converted to <span class="in">`NA`</span>, potentially affecting later analysis.</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>In the raw GDP dataset, some values included a “k” suffix to represent thousands of dollars (e.g., 10,000 to 10k). The first step is to figure out a way to convert GDP values into numeric form. To keep values constant, we created a function that converts these abbreviated values into their full numeric form, allowing for accurate numeric comparisons. Without this step, any observations containing a “k” would be dropped, leaving it empty and could potentially affecting later analysis.</span>
 <span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>clean_year <span class="ot">&lt;-</span> <span class="cf">function</span>(str) {</span>

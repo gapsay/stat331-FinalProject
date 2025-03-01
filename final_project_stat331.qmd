@@ -24,7 +24,7 @@ library(knitr)
 
 # 1 Project Proposal + Data
 
-Both the [life expectancy](https://www.gapminder.org/data/) and the [gross domestic product](https://www.gapminder.org/data/) (GDP) data were sourced from [Gapminder](https://www.gapminder.org/about/about-gapminder/), a non-profit organization whose mission “is to fight devastating ignorance with a fact-based world view everyone could understand.” Their site provides data sets collected from many reputable sources and interactive visualizations on important world topics.
+This analysis utilizes the [life expectancy](https://www.gapminder.org/data/) and the [gross domestic product](https://www.gapminder.org/data/) (GDP) datasets sourced [Gapminder](https://www.gapminder.org/about/about-gapminder/), a non-profit organization whose mission “is to fight devastating ignorance with a fact-based world view everyone could understand.” Their site provides data sets collected from many reputable sources and interactive visualizations on important world topics.
 
 ```{r data}
 lex_raw <- read.csv("../stat331-FinalProject/lex.csv")
@@ -33,7 +33,7 @@ gdp_pcap_raw <- read.csv("../stat331-FinalProject/gdp_pcap.csv")
 
 ## 1.1 Data Cleaning
 
-In the raw GDP dataset, some values included a “k” suffix to represent thousands of dollars (e.g., 10,000 to 10k). The first step is to figure out a way to convert GDP values into numeric form. To keep values constant, we created a function that converts these abbreviated values into their full numeric form, allowing for accurate numeric comparisons. Without this step, any observations containing a “k” would be converted to `NA`, potentially affecting later analysis.
+In the raw GDP dataset, some values included a “k” suffix to represent thousands of dollars (e.g., 10,000 to 10k). The first step is to figure out a way to convert GDP values into numeric form. To keep values constant, we created a function that converts these abbreviated values into their full numeric form, allowing for accurate numeric comparisons. Without this step, any observations containing a “k” would be dropped, leaving it empty and could potentially affecting later analysis.
 
 ```{r}
 clean_year <- function(str) {
