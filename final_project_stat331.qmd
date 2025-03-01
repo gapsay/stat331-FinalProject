@@ -60,7 +60,7 @@ lex <- lex_raw |>
          year = as.factor(year))
 ```
 
-The GDP data was obtained from the Madison Project Database (MPD) and Penn World Table (PWT). This data set contains information on gross domestic product (GDP) per person adjusted for differences in purchasing power in international dollars, and fixed 2017 prices. GDP per capita measures the value of everything a country produces during a year, divided by the number of people. We pivoted the data to have columns containing the country, year, and GDP of interest.
+The GDP data was obtained from the Madison Project Database (MPD) and Penn World Table (PWT). This data set contains information on gross domestic product (GDP) per person adjusted for differences in purchasing power in international dollars, and fixed 2017 prices. GDP per capita measures the value of everything a country produces during a year, divided by the number of people. We transformed the data to have columns containing the country, year, and GDP of interest.
 
 **GDP Info from:** [https://www.gapminder.org/data/documentation/gd001/](https://www.gapminder.org/data/documentation/gd001/)
 
