@@ -21,6 +21,8 @@ execute:
 library(tidyverse)
 library(knitr)
 ```
+### Reproducibility
+All code, raw data, and project files are available in our [GitHub Repository](https://github.com/gapsay/stat331-FinalProject/tree/main). Feel free to explore or replicate our analysis!
 
 # 1 Project Proposal + Data
 
