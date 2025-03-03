@@ -116,10 +116,19 @@ head(gdp_lex) |>
 ```{r}
 continents <- read_csv("./country_by_continents.csv")
 
-test <- left_join(gdp_lex, continents, join_by(country == Country))
+# Check which countries in gdp_lex don't match with continents
+missing_countries <- gdp_lex |>
+  distinct(country) |>
+  anti_join(continents, by = c("country" = "Country"))
 
-# replace all "saint" with st
-# replace "East Timor" with Timor-Leste
+# Check which countires in continents don't match with gdp_lex
+countries_not_in_gdp <- continents |>
+  distinct(Country) |>
+  anti_join(gdp_lex, by = c("Country" = "country"))
+
+# To do: Replace the country names in continents with the ones in gdp_lex
+
+test <- left_join(gdp_lex, continents, join_by(country == Country))
 ```
 
 After cleaning up each data set, we had to join the two together by our observational unit, country. We hypothesize that as GDP increases, life expectancy will also begin to increase, as a higher GDP correlates to better infrastructure and more/better access to healthcare and medicine.
