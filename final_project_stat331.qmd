@@ -10,7 +10,7 @@ format:
 editor: source
 execute: 
   error: true
-  echo: true
+  echo: false
   message: false
   warning: false
 ---
@@ -106,9 +106,6 @@ gdp_lex <- lex |>
     )
   ) |>
   na.omit()
-
-head(gdp_lex) |>
-  kable()
 ```
 
 After cleaning up each data set, we had to join the two together by our observational unit, country. We hypothesize that as GDP increases, life expectancy will also begin to increase, as a higher GDP correlates to better infrastructure and more/better access to healthcare and medicine.
