@@ -126,9 +126,63 @@ countries_not_in_gdp <- continents |>
   distinct(Country) |>
   anti_join(gdp_lex, by = c("Country" = "country"))
 
-# To do: Replace the country names in continents with the ones in gdp_lex
+# Create a mapping dictionary from continent countries to gdp_lex countries
+country_mapping <- tibble(
+  continent_name = c(
+    "Burkina",
+    "Burma (Myanmar)",
+    "Congo",
+    "Czechia",
+    "Democratic Republic of Congo",
+    "East Timor",
+    "Hong Kong",
+    "Ivory Coast",
+    "Kyrgyzstan",
+    "Laos",
+    "Macedonia",
+    "Micronesia",
+    "Saint Kitts and Nevis",
+    "Saint Lucia",
+    "Saint Vincent and the Grenadines",
+    "Slovakia",
+    "Swaziland",
+    "United Arab Emirates",
+    "United Kingdom",
+    "United States"
+  ),
+  gdp_name = c(
+    "Burkina Faso",
+    "Myanmar",
+    "Congo, Rep.",
+    "Czech Republic",
+    "Congo, Dem. Rep.",
+    "Timor-Leste",
+    "Hong Kong, China",
+    "Cote d'Ivoire",
+    "Kyrgyz Republic",
+    "Lao",
+    "North Macedonia",
+    "Micronesia, Fed. Sts.",
+    "St. Kitts and Nevis",
+    "St. Lucia",
+    "St. Vincent and the Grenadines",
+    "Slovak Republic",
+    "Eswatini",
+    "UAE",
+    "UK",
+    "USA"
+  )
+)
 
-test <- left_join(gdp_lex, continents, join_by(country == Country))
+# Create modified continents dataset with gdp_lex country names as standard
+continents_modified <- continents |>
+  left_join(country_mapping, by = c("Country" = "continent_name")) |>
+  mutate(Country = if_else(!is.na(gdp_name), gdp_name, Country)) |>
+  select(-gdp_name)
+
+# Join both datasets to assign continent value to all countries 
+gdp_lex_with_continents <- left_join(gdp_lex, continents_modified, by = c("country" = "Country"))
+
 ```
 
 After cleaning up each data set, we had to join the two together by our observational unit, country. We hypothesize that as GDP increases, life expectancy will also begin to increase, as a higher GDP correlates to better infrastructure and more/better access to healthcare and medicine.
