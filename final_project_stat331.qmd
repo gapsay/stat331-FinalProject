@@ -194,7 +194,8 @@ After cleaning up each data set, we had to join the two together by our observat
 
 ```{r}
 # Relationship
-gdp_lex <- gdp_lex |>
+gdp_lex2 <- gdp_lex |>
+  # had to make year an integer
   mutate(year = as.integer(year)) |> 
   group_by(country)
 
@@ -206,10 +207,30 @@ ggplot(
   )
 ) +
   geom_point(alpha = 0.5) +
-  geom_jitter(width = 4) +
+  geom_jitter(width = 4)
   
-  labs(title = 'Year: {year}', x = 'GDP per capita', y = 'life expectancy') +
-  transition_time(year) +
-  ease_aes('linear')
+# GIF attempt
+#   labs(title = 'Year: {year}', x = 'GDP per capita', y = 'life expectancy') +
+#   transition_time(year) +
+#   ease_aes('linear')
+# 
+# # animate(
+# #   anim + ease_aes(x = 'bounce-out') + enter_fly(x_loc = -1) + exit_fade(),
+# #   width = 400, height = 600, res = 35)
 
 ```
+## 2.2 Linear Regression
+```{r}
+gdp_lex3<- gdp_lex |>
+  group_by(country) |>
+  # averaged dp across all years per country
+  mutate(avg_gdp = mean(gdp, na.rm = TRUE))
+
+gdp_lex_lm <- lm(life_expectancy ~ avg_gdp, data = gdp_lex3)
+
+summary(gdp_lex_lm)
+broom::augment(gdp_lex_lm) |> 
+  head(3)
+  
+```
+
