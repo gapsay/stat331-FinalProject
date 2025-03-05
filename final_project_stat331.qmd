@@ -21,6 +21,8 @@ execute:
 library(tidyverse)
 library(knitr)
 library(gganimate)
+library(broom)
+library(gifski)
 ```
 
 ### Reproducibility
@@ -188,9 +190,47 @@ gdp_lex3<- gdp_lex |>
 
 gdp_lex_lm <- lm(life_expectancy ~ avg_gdp, data = gdp_lex3)
 
-summary(gdp_lex_lm)
-broom::augment(gdp_lex_lm) |> 
+summary(gdp_lex_lm)|>
   head(3)
-  
+
+augment(gdp_lex_lm)
+
+```
+
+## 2.3 
+```{r}
+#residuals vs fitted plot
+gdp_lex_lm |> 
+  augment() |> 
+  ggplot(aes(x = .fitted, y = .resid)) +
+  #specify the points by continent
+  geom_point() +
+  geom_hline(yintercept = 0, linetype = "dashed", 
+             color = "red", lwd = 1.5)
+
+#The variance in the response values.
+res_var <- var(augment(gdp_lex_lm)$life_expectancy)
+
+#variance in the fitted values from your regression model
+fitted_var <- var(augment(gdp_lex_lm)$.fitted)
+
+#The variance in the residuals from your regression model.
+resid_var <- var(augment(gdp_lex_lm)$.resid)
+
+
+# create matrix with 4 columns and 4 rows
+data= matrix(c(res_var, fitted_var, resid_var), ncol=3, byrow=TRUE)
+ 
+# specify the column names and row names of matrix
+colnames(data) = c('response variance','fitted values variance','residuals variance')
+rownames(data) <- c("value")
+ 
+# assign to table
+final=as.table(data)
+ 
+# display
+final |>
+  kable()
+
 ```
 
