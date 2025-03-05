@@ -23,6 +23,7 @@ library(knitr)
 library(gganimate)
 library(broom)
 library(gifski)
+library(DT)
 ```
 
 ### Reproducibility
@@ -190,24 +191,19 @@ gdp_lex3<- gdp_lex |>
 
 gdp_lex_lm <- lm(life_expectancy ~ avg_gdp, data = gdp_lex3)
 
-summary(gdp_lex_lm)|>
-  head(3)
+summary(gdp_lex_lm)
 
-augment(gdp_lex_lm)
+augmented <- augment(gdp_lex_lm)
+
+datatable(augmented, 
+          class = 'cell-border stripe',
+          colnames = c('Life Expectancy', 'Avg GDP', 'Fitted Value', 'Residual', 'Predicted Value', "Standard Deviation", "Cook's D", "Standardized Residual"))
+
 
 ```
 
 ## 2.3 
 ```{r}
-#residuals vs fitted plot
-gdp_lex_lm |> 
-  augment() |> 
-  ggplot(aes(x = .fitted, y = .resid)) +
-  #specify the points by continent
-  geom_point() +
-  geom_hline(yintercept = 0, linetype = "dashed", 
-             color = "red", lwd = 1.5)
-
 #The variance in the response values.
 res_var <- var(augment(gdp_lex_lm)$life_expectancy)
 
@@ -219,18 +215,16 @@ resid_var <- var(augment(gdp_lex_lm)$.resid)
 
 
 # create matrix with 4 columns and 4 rows
-data= matrix(c(res_var, fitted_var, resid_var), ncol=3, byrow=TRUE)
+data= matrix(c(round(res_var, 2), round(fitted_var, 2), round(resid_var, 2)), ncol=3, byrow=TRUE)
  
 # specify the column names and row names of matrix
-colnames(data) = c('response variance','fitted values variance','residuals variance')
-rownames(data) <- c("value")
- 
-# assign to table
-final=as.table(data)
+colnames(data) = c('Response','Fitted Values','Residuals')
+rownames(data) <- c("Variance")
+
  
 # display
-final |>
-  kable()
+as.table(data) |>
+  kable(caption = "Variances")
 
 ```
 
