@@ -20,6 +20,7 @@ execute:
 
 library(tidyverse)
 library(knitr)
+library(gganimate)
 ```
 
 ### Reproducibility
@@ -193,8 +194,10 @@ After cleaning up each data set, we had to join the two together by our observat
 
 ```{r}
 # Relationship
-gdp_lex |>
+gdp_lex <- gdp_lex |>
+  mutate(year = as.integer(year)) |> 
   group_by(country)
+
 ggplot(
   data = gdp_lex,
   mapping = aes(
@@ -203,6 +206,10 @@ ggplot(
   )
 ) +
   geom_point(alpha = 0.5) +
-  geom_jitter(width = 4)
+  geom_jitter(width = 4) +
+  
+  labs(title = 'Year: {year}', x = 'GDP per capita', y = 'life expectancy') +
+  transition_time(year) +
+  ease_aes('linear')
 
 ```
