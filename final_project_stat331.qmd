@@ -126,7 +126,7 @@ country_mapping <- tibble(
     "Ivory Coast", "Kyrgyzstan", "Laos", "Macedonia", "Micronesia",
     "Saint Kitts and Nevis", "Saint Lucia", 
     "Saint Vincent and the Grenadines", "Slovakia", "Swaziland",
-    "United Arab Emirates", "United Kingdom", "United States"
+    "United Arab Emirates", "United Kingdom", "United States", "Palestine"
   ),
   gdp_name = c(
     "Burkina Faso", "Myanmar", "Congo, Rep.", "Czech Republic",
@@ -134,18 +134,19 @@ country_mapping <- tibble(
     "Cote d'Ivoire", "Kyrgyz Republic", "Lao",
     "North Macedonia", "Micronesia, Fed. Sts.", "St. Kitts and Nevis",
     "St. Lucia", "St. Vincent and the Grenadines",
-    "Slovak Republic", "Eswatini", "UAE", "UK", "USA"
+    "Slovak Republic", "Eswatini", "UAE", "UK", "USA", "Palestine"
   )
 )
 
 continents <- continents_raw |>
+  add_row(Continent = "Asia", Country = "Palestine") |> 
   left_join(country_mapping, by = c("Country" = "continent_name")) |>
-  mutate(Country = if_else(!is.na(gdp_name), gdp_name, Country)) |>
-  select(-gdp_name)
+  mutate(combined = if_else(!is.na(gdp_name), gdp_name, Country)) 
 
 # Join both datasets to assign continent value to all countries 
 gdp_lex <- left_join(gdp_lex, continents, 
-                     by = c("country" = "Country"))
+                     by = c("country" = "combined")) |> 
+  select(-country, -gdp_name) 
 
 ```
 
@@ -161,7 +162,7 @@ gdp_lex <- gdp_lex |>
   mutate(year = 1800 + (year - min(year))) |> 
   drop_na()
 
-ggplot(gdp_lex, aes(gdp, life_expectancy, color = country)) +
+ggplot(gdp_lex, aes(gdp, life_expectancy, color = Country)) +
   geom_point(alpha = 0.7, show.legend = FALSE) +
   # scale_color_manual(values = continent_colors) +
   scale_size(range = c(2, 12)) +
@@ -177,7 +178,7 @@ ggplot(gdp_lex, aes(gdp, life_expectancy, color = country)) +
 ## 2.2 Linear Regression
 ```{r}
 gdp_lex <- gdp_lex |>
-  group_by(country) |>
+  group_by(Country) |>
   # averaged dp across all years per country
   mutate(avg_gdp = mean(gdp, na.rm = TRUE))
 
