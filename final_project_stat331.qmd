@@ -122,9 +122,9 @@ gdp_lex <- lex |>
 country_mapping <- tibble(
   continent_name = c(
     "Burkina", "Burma (Myanmar)", "Congo", "Czechia",
-    "Democratic Republic of Congo", "East Timor", "Hong Kong", 
+    "Democratic Republic of Congo", "East Timor", "Hong Kong",
     "Ivory Coast", "Kyrgyzstan", "Laos", "Macedonia", "Micronesia",
-    "Saint Kitts and Nevis", "Saint Lucia", 
+    "Saint Kitts and Nevis", "Saint Lucia",
     "Saint Vincent and the Grenadines", "Slovakia", "Swaziland",
     "United Arab Emirates", "United Kingdom", "United States", "Palestine"
   ),
@@ -139,14 +139,14 @@ country_mapping <- tibble(
 )
 
 continents <- continents_raw |>
-  add_row(Continent = "Asia", Country = "Palestine") |> 
+  add_row(Continent = "Asia", Country = "Palestine") |>
   left_join(country_mapping, by = c("Country" = "continent_name")) |>
-  mutate(combined = if_else(!is.na(gdp_name), gdp_name, Country)) 
+  mutate(combined = if_else(!is.na(gdp_name), gdp_name, Country))
 
-# Join both datasets to assign continent value to all countries 
-gdp_lex <- left_join(gdp_lex, continents, 
+# Join both datasets to assign continent value to all countries
+gdp_lex <- left_join(gdp_lex, continents,
                      by = c("country" = "combined")) |> 
-  select(-country, -gdp_name) 
+  select(-country, -gdp_name)
 
 ```
 
@@ -157,21 +157,35 @@ After cleaning up each data set, we had to join the two together by our observat
 ## 2.1 Data Visualization
 
 ```{r}
-gdp_lex <- gdp_lex |> 
-  mutate(year = as.integer(year)) |> 
-  mutate(year = 1800 + (year - min(year))) |> 
+gdp_lex <- gdp_lex |>
+  mutate(year = as.integer(year)) |>
+  mutate(year = 1800 + (year - min(year))) |>
   drop_na()
 
 ggplot(gdp_lex, aes(gdp, life_expectancy, color = Country)) +
   geom_point(alpha = 0.7, show.legend = FALSE) +
   # scale_color_manual(values = continent_colors) +
-  scale_size(range = c(2, 12)) +
+  scale_size(range = c(2, 12), guide = "none") +
   scale_x_log10() +
   facet_wrap(~Continent) +
-  # Here comes the gganimate specific bits
-  labs(title = 'Year: {frame_time}', x = 'GDP per capita', y = 'Life Expectancy') +
+  theme_minimal() +
+  theme(
+    strip.text = element_text(face = "bold", size = 12),
+    plot.title = element_text(face = "bold", size = 18),
+    plot.subtitle = element_text(size = 14, color = "black"),
+    plot.caption = element_text(size = 10, color = "black"),
+    legend.position = "bottom"
+  ) +
+  labs(
+    title = "GDP per Capita vs Life Expectancy by Continent",
+    subtitle = "Year: {frame_time}",
+    x = "GDP per Capita (log scale)",
+    y = "Life Expectancy (years)",
+    caption = "Data source: Gapminder",
+    color = "Continent"
+  ) +
   transition_time(as.integer(year)) +
-  ease_aes('linear')
+  ease_aes("linear")
 ```
 
 ## 2.2 Linear Regression
@@ -188,7 +202,7 @@ summary(gdp_lex_lm)
 
 augmented <- augment(gdp_lex_lm)
 
-datatable(augmented, 
+datatable(augmented,
           class = 'cell-border stripe',
           colnames = c('Life Expectancy', 'Avg GDP', 'Fitted Value', 
                        'Residual', 'Predicted Value', "Standard Deviation", 
@@ -196,30 +210,30 @@ datatable(augmented,
 ```
 
 ```{r}
-models <- gdp_lex |> 
-  group_by(Country) |> 
+models <- gdp_lex |>
+  group_by(Country) |>
   mutate(avg_gdp = mean(gdp, na.rm = TRUE), 
          avg_lex = mean(life_expectancy, na.rm = TRUE)) |> 
-  distinct(Country, .keep_all = TRUE) |> 
-  select(-year) |> 
-  ungroup() |> 
-  group_by(Continent) |> 
-  nest() |> 
+  distinct(Country, .keep_all = TRUE) |>
+  select(-year) |>
+  ungroup() |>
+  group_by(Continent) |>
+  nest() |>
   mutate(model = map(data, ~ lm(avg_lex ~ avg_gdp, data = .x)), 
          summary = map(model, tidy)) |> 
-  select(Continent, summary) |> 
-  unnest(summary) 
-  
-models |> 
-  gt(groupname_col = "Continent") |> 
+  select(Continent, summary) |>
+  unnest(summary)
+
+models |>
+  gt(groupname_col = "Continent") |>
   tab_header(title = md("**Regression Model Estimates by Continent**"), 
              subtitle = "Average Life Expectancy vs Average GDP") |> 
   fmt_number(columns = c(estimate, std.error, statistic, p.value), 
              decimals = 6) |> 
   cols_label(term = "Continent", 
-             estimate = "Estimate", 
-             std.error = "Std. Error", 
-             statistic = "t-Statistic", 
+    estimate = "Estimate",
+    std.error = "Std. Error",
+    statistic = "t-Statistic",
              p.value = "p-Value") |> 
   tab_spanner(label = "Model Estimates", 
               columns = c(estimate, std.error, statistic, p.value)) |> 
@@ -299,12 +313,12 @@ resid_var <- var(augment(gdp_lex_lm)$.resid)
 
 # create matrix with 4 columns and 4 rows
 data= matrix(c(round(res_var, 2), round(fitted_var, 2), round(resid_var, 2)), ncol=3, byrow=TRUE)
- 
+
 # specify the column names and row names of matrix
 colnames(data) = c('Response','Fitted Values','Residuals')
 rownames(data) <- c("")
 
- 
+
 # display
 as.table(data) |>
   kable(caption = "Variances")
