@@ -24,6 +24,9 @@ library(gganimate)
 library(broom)
 library(gifski)
 library(DT)
+library(gt)
+library(kableExtra)
+library(scales)
 ```
 
 ### Reproducibility
@@ -113,9 +116,6 @@ gdp_lex <- lex |>
     )
   ) |>
   na.omit()
-
-head(gdp_lex) |>
-  kable()
 ```
 
 ```{r}
@@ -174,15 +174,15 @@ ggplot(gdp_lex, aes(gdp, life_expectancy, color = Country)) +
   ease_aes('linear')
 ```
 
-
 ## 2.2 Linear Regression
+
 ```{r}
-gdp_lex <- gdp_lex |>
+gdp_lex_mean <- gdp_lex |>
   group_by(Country) |>
   # averaged dp across all years per country
   mutate(avg_gdp = mean(gdp, na.rm = TRUE))
 
-gdp_lex_lm <- lm(life_expectancy ~ avg_gdp, data = gdp_lex)
+gdp_lex_lm <- lm(life_expectancy ~ avg_gdp, data = gdp_lex_mean)
 
 summary(gdp_lex_lm)
 
@@ -190,12 +190,102 @@ augmented <- augment(gdp_lex_lm)
 
 datatable(augmented, 
           class = 'cell-border stripe',
-          colnames = c('Life Expectancy', 'Avg GDP', 'Fitted Value', 'Residual', 'Predicted Value', "Standard Deviation", "Cook's D", "Standardized Residual"))
-
-
+          colnames = c('Life Expectancy', 'Avg GDP', 'Fitted Value', 
+                       'Residual', 'Predicted Value', "Standard Deviation", 
+                       "Cook's D", "Standardized Residual"))
 ```
 
+```{r}
+models <- gdp_lex |> 
+  group_by(Country) |> 
+  mutate(avg_gdp = mean(gdp, na.rm = TRUE), 
+         avg_lex = mean(life_expectancy, na.rm = TRUE)) |> 
+  distinct(Country, .keep_all = TRUE) |> 
+  select(-year) |> 
+  ungroup() |> 
+  group_by(Continent) |> 
+  nest() |> 
+  mutate(model = map(data, ~ lm(avg_lex ~ avg_gdp, data = .x)), 
+         summary = map(model, tidy)) |> 
+  select(Continent, summary) |> 
+  unnest(summary) 
+  
+models |> 
+  gt(groupname_col = "Continent") |> 
+  tab_header(title = md("**Regression Model Estimates by Continent**"), 
+             subtitle = "Life Expectancy vs GDP") |> 
+  fmt_number(columns = c(estimate, std.error, statistic, p.value), 
+             decimals = 6) |> 
+  cols_label(term = "Variable", 
+             estimate = "Estimate", 
+             std.error = "Std. Error", 
+             statistic = "t-Statistic", 
+             p.value = "p-Value") |> 
+  tab_spanner(label = "Model Estimates", 
+              columns = c(estimate, std.error, statistic, p.value)) |> 
+  data_color(columns = p.value, 
+             colors = col_numeric(palette = c("green", "yellow", "red"), 
+                                  domain = c(0, 0.05, 1))) |> 
+  tab_style(style = list(cell_fill(color = "lightgray"), 
+                         cell_text(weight = "bold")),
+            locations = cells_row_groups()) |> 
+  tab_footnote(footnote = "P-values below 0.05 indicate statistical significance.", 
+               locations = cells_column_labels(columns = p.value))
+```
+
+::: panel-tabset
+#### Asia
+
+$$ \hat{y} = 49.6 + 0.000151x $$
+
+- Intercept: When the average GDP of Asia is $0, the average life expectancy in Asia is 49.6 years. 
+
+- Slope: For each additional $1 increase in average GDP in Asia, the life expectancy of a person in Asia will increase by 0.000151 years.  
+
+#### Africa
+
+$$ \hat{y} = 45.5 + 0.000608x $$
+
+- Intercept: When the average GDP of Africa is $0$ dollars, the average life expectancy in Africa is $45.5$ years. 
+
+- Slope: For each additional $1$ dollar increase in average GDP in Africa, the life expectancy of a person in Africa will increase by $0.000608$ years.  
+
+#### Europe
+
+$$ \hat{y} = 53.4 + 0.000296x $$
+
+- Intercept: When the average GDP of Europe is $0$ dollars, the average life expectancy in Europe is $53.4$ years. 
+
+- Slope: For each additional $1$ dollar increase in average GDP in Europe, the life expectancy of a person in Europe will increase by $0.000296$ years.  
+
+#### South America
+
+$$ \hat{y} = 56 - 0.0000803x $$
+
+- Intercept: When the average GDP of South America is $0$ dollars, the average life expectancy in South America is $56$ years. 
+
+- Slope: For each additional $1$ dollar increase in average GDP in South America, the life expectancy of a person in South America will decrease by $0.0000803$ years.  
+
+#### North America
+
+$$ \hat{y} = 48.1 + 0.000591x $$
+
+- Intercept: When the average GDP of North America is $0$ dollars, the average life expectancy in North America is $48.1$ years. 
+
+- Slope: For each additional $1$ dollar increase in average GDP in North America, the life expectancy of a person in North America will increase by $0.000591$ years. 
+
+#### Oceania
+
+$$ \hat{y} = 47.2 + 0.000724x $$
+
+- Intercept: When the average GDP of Oceania is $0$ dollars, the average life expectancy in Oceania is $47.2$ years. 
+
+- Slope: For each additional $1$ dollar increase in average GDP in Oceania, the life expectancy of a person in Oceania will increase by $0.000724$ years.  
+
+:::
+
 ## 2.3 Model Fit
+
 ```{r}
 #The variance in the response values.
 res_var <- var(augment(gdp_lex_lm)$life_expectancy)
@@ -220,4 +310,3 @@ as.table(data) |>
   kable(caption = "Variances")
 
 ```
-
