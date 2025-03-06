@@ -213,10 +213,10 @@ models <- gdp_lex |>
 models |> 
   gt(groupname_col = "Continent") |> 
   tab_header(title = md("**Regression Model Estimates by Continent**"), 
-             subtitle = "Life Expectancy vs GDP") |> 
+             subtitle = "Average Life Expectancy vs Average GDP") |> 
   fmt_number(columns = c(estimate, std.error, statistic, p.value), 
              decimals = 6) |> 
-  cols_label(term = "Variable", 
+  cols_label(term = "Continent", 
              estimate = "Estimate", 
              std.error = "Std. Error", 
              statistic = "t-Statistic", 
