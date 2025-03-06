@@ -156,40 +156,27 @@ After cleaning up each data set, we had to join the two together by our observat
 ## 2.1 Data Visualization
 
 ```{r}
-# Relationship
-gdp_lex2 <- gdp_lex |>
-  # had to make year an integer
-  mutate(year = as.integer(year)) |> 
-  group_by(country)
-
-ggplot(
-  data = gdp_lex,
-  mapping = aes(
-    x = gdp,
-    y = life_expectancy
-  )
-) +
-  geom_point(alpha = 0.5) +
-  geom_jitter(width = 4)
-  
-# GIF attempt
-#   labs(title = 'Year: {year}', x = 'GDP per capita', y = 'life expectancy') +
-#   transition_time(year) +
-#   ease_aes('linear')
-# 
-# # animate(
-# #   anim + ease_aes(x = 'bounce-out') + enter_fly(x_loc = -1) + exit_fade(),
-# #   width = 400, height = 600, res = 35)
-
+ggplot(gdp_lex_with_continents, aes(gdp, life_expectancy, color = country)) +
+  geom_point(alpha = 0.7, show.legend = FALSE) +
+  # scale_color_manual(values = continent_colors) +
+  scale_size(range = c(2, 12)) +
+  scale_x_log10() +
+  facet_wrap(~Continent) +
+  # Here comes the gganimate specific bits
+  labs(title = 'Year: {frame_time}', x = 'GDP per capita', y = 'Life Expectancy') +
+  transition_time(as.integer(year)) +
+  ease_aes('linear')
 ```
+
+
 ## 2.2 Linear Regression
 ```{r}
-gdp_lex3<- gdp_lex |>
+gdp_lex <- gdp_lex |>
   group_by(country) |>
   # averaged dp across all years per country
   mutate(avg_gdp = mean(gdp, na.rm = TRUE))
 
-gdp_lex_lm <- lm(life_expectancy ~ avg_gdp, data = gdp_lex3)
+gdp_lex_lm <- lm(life_expectancy ~ avg_gdp, data = gdp_lex)
 
 summary(gdp_lex_lm)
 
@@ -202,7 +189,7 @@ datatable(augmented,
 
 ```
 
-## 2.3 
+## 2.3 Model Fit
 ```{r}
 #The variance in the response values.
 res_var <- var(augment(gdp_lex_lm)$life_expectancy)
@@ -219,7 +206,7 @@ data= matrix(c(round(res_var, 2), round(fitted_var, 2), round(resid_var, 2)), nc
  
 # specify the column names and row names of matrix
 colnames(data) = c('Response','Fitted Values','Residuals')
-rownames(data) <- c("Variance")
+rownames(data) <- c("")
 
  
 # display
