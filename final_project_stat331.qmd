@@ -156,7 +156,12 @@ After cleaning up each data set, we had to join the two together by our observat
 ## 2.1 Data Visualization
 
 ```{r}
-ggplot(gdp_lex_with_continents, aes(gdp, life_expectancy, color = country)) +
+gdp_lex <- gdp_lex |> 
+  mutate(year = as.integer(year)) |> 
+  mutate(year = 1800 + (year - min(year))) |> 
+  drop_na()
+
+ggplot(gdp_lex, aes(gdp, life_expectancy, color = country)) +
   geom_point(alpha = 0.7, show.legend = FALSE) +
   # scale_color_manual(values = continent_colors) +
   scale_size(range = c(2, 12)) +
