@@ -147,7 +147,8 @@ continents <- continents_raw |>
 gdp_lex <- left_join(gdp_lex, continents,
   by = c("country" = "combined")
 ) |>
-  select(-country, -gdp_name)
+  select(-country, -gdp_name) |>
+  mutate(Continent = as.factor(Continent))
 
 ```
 
@@ -158,24 +159,67 @@ After cleaning up each data set, we had to join the two together by our observat
 ## 2.1 Data Visualization
 
 ```{r}
+#| fig-width: 12
+#| fig.height: 8
+# Define color palette for continents
+continent_colors <- c(
+  "Africa" = "#E41A1C",
+  "Asia" = "#377EB8",
+  "Europe" = "#4DAF4A",
+  "North America" = "#984EA3",
+  "Oceania" = "#FF7F00",
+  "South America" = "#FFFF33"
+)
+
+ggplot(gdp_lex, aes(x = gdp, y = life_expectancy, color = Continent)) +
+  geom_smooth(method = "loess", se = TRUE, alpha = 0.2) +
+  scale_x_log10() +
+  scale_color_manual(values = continent_colors) +
+  scale_alpha(range = c(0.2, 0.9), guide = "none") +
+  theme_minimal() +
+  labs(
+    title = "GDP per Capita vs Life Expectancy",
+    subtitle = "Non-linear relationship with confidence intervals by continent",
+    x = "GDP per Capita (log scale)",
+    y = "Life Expectancy (years)"
+  ) +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(face = "bold", size = 24),
+    axis.title = element_text(size = 18),
+    plot.subtitle = element_text(size = 18),
+    plot.caption = element_text(size = 14),
+    axis.text.x = element_text(size = 14),
+    axis.text.y = element_text(size = 14),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 14)
+  )
+```
+
+```{r}
+#| fig-width: 12
+#| fig.height: 8
 gdp_lex <- gdp_lex |>
   mutate(year = as.integer(year)) |>
   mutate(year = 1800 + (year - min(year))) |>
   drop_na()
 
-ggplot(gdp_lex, aes(gdp, life_expectancy, color = Country)) +
-  geom_point(alpha = 0.7, show.legend = FALSE) +
-  # scale_color_manual(values = continent_colors) +
+ggplot(gdp_lex, aes(gdp, life_expectancy, color = Continent)) +
+  geom_point(alpha = 0.7, size = 2.5, show.legend = FALSE) +
+  scale_color_manual(values = continent_colors) +
   scale_size(range = c(2, 12), guide = "none") +
   scale_x_log10() +
   facet_wrap(~Continent) +
   theme_minimal() +
   theme(
-    strip.text = element_text(face = "bold", size = 12),
-    plot.title = element_text(face = "bold", size = 18),
-    plot.subtitle = element_text(size = 14, color = "black"),
-    plot.caption = element_text(size = 10, color = "black"),
-    legend.position = "bottom"
+    strip.text = element_text(face = "bold", size = 18),
+    plot.title = element_text(face = "bold", size = 24),
+    axis.title = element_text(size = 18),
+    plot.subtitle = element_text(size = 18),
+    plot.caption = element_text(size = 14),
+    legend.position = "bottom",
+    axis.text.x = element_text(size = 14),
+    axis.text.y = element_text(size = 14)
   ) +
   labs(
     title = "GDP per Capita vs Life Expectancy by Continent",
