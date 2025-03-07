@@ -145,7 +145,8 @@ continents <- continents_raw |>
 
 # Join both datasets to assign continent value to all countries
 gdp_lex <- left_join(gdp_lex, continents,
-                     by = c("country" = "combined")) |> 
+  by = c("country" = "combined")
+) |>
   select(-country, -gdp_name)
 
 ```
@@ -203,48 +204,73 @@ summary(gdp_lex_lm)
 augmented <- augment(gdp_lex_lm)
 
 datatable(augmented,
-          class = 'cell-border stripe',
-          colnames = c('Life Expectancy', 'Avg GDP', 'Fitted Value', 
-                       'Residual', 'Predicted Value', "Standard Deviation", 
-                       "Cook's D", "Standardized Residual"))
+  class = "cell-border stripe",
+  colnames = c(
+    "Life Expectancy", "Avg GDP", "Fitted Value",
+    "Residual", "Predicted Value", "Standard Deviation",
+    "Cook's D", "Standardized Residual"
+  )
+)
 ```
 
 ```{r}
 models <- gdp_lex |>
   group_by(Country) |>
-  mutate(avg_gdp = mean(gdp, na.rm = TRUE), 
-         avg_lex = mean(life_expectancy, na.rm = TRUE)) |> 
+  mutate(
+    avg_gdp = mean(gdp, na.rm = TRUE),
+    avg_lex = mean(life_expectancy, na.rm = TRUE)
+  ) |>
   distinct(Country, .keep_all = TRUE) |>
   select(-year) |>
   ungroup() |>
   group_by(Continent) |>
   nest() |>
-  mutate(model = map(data, ~ lm(avg_lex ~ avg_gdp, data = .x)), 
-         summary = map(model, tidy)) |> 
+  mutate(
+    model = map(data, ~ lm(avg_lex ~ avg_gdp, data = .x)),
+    summary = map(model, tidy)
+  ) |>
   select(Continent, summary) |>
   unnest(summary)
 
 models |>
   gt(groupname_col = "Continent") |>
-  tab_header(title = md("**Regression Model Estimates by Continent**"), 
-             subtitle = "Average Life Expectancy vs Average GDP") |> 
-  fmt_number(columns = c(estimate, std.error, statistic, p.value), 
-             decimals = 6) |> 
-  cols_label(term = "Continent", 
+  tab_header(
+    title = md("**Regression Model Estimates by Continent**"),
+    subtitle = "Average Life Expectancy vs Average GDP"
+  ) |>
+  fmt_number(
+    columns = c(estimate, std.error, statistic, p.value),
+    decimals = 6
+  ) |>
+  cols_label(
+    term = "Continent",
     estimate = "Estimate",
     std.error = "Std. Error",
     statistic = "t-Statistic",
-             p.value = "p-Value") |> 
-  tab_spanner(label = "Model Estimates", 
-              columns = c(estimate, std.error, statistic, p.value)) |> 
-  data_color(columns = p.value, 
-             colors = col_numeric(palette = c("green", "yellow", "red"), 
-                                  domain = c(0, 0.05, 1))) |> 
-  tab_style(style = list(cell_fill(color = "lightgray"), 
-                         cell_text(weight = "bold")),
-            locations = cells_row_groups()) |> 
-  tab_footnote(footnote = "P-values below 0.05 indicate statistical significance.", 
-               locations = cells_column_labels(columns = p.value))
+    p.value = "p-Value"
+  ) |>
+  tab_spanner(
+    label = "Model Estimates",
+    columns = c(estimate, std.error, statistic, p.value)
+  ) |>
+  data_color(
+    columns = p.value,
+    colors = col_numeric(
+      palette = c("green", "yellow", "red"),
+      domain = c(0, 0.05, 1)
+    )
+  ) |>
+  tab_style(
+    style = list(
+      cell_fill(color = "lightgray"),
+      cell_text(weight = "bold")
+    ),
+    locations = cells_row_groups()
+  ) |>
+  tab_footnote(
+    footnote = "P-values below 0.05 indicate statistical significance.",
+    locations = cells_column_labels(columns = p.value)
+  )
 ```
 
 ::: panel-tabset
@@ -301,21 +327,21 @@ $$ \hat{y} = 47.2 + 0.000724x $$
 ## 2.3 Model Fit
 
 ```{r}
-#The variance in the response values.
+# The variance in the response values.
 res_var <- var(augment(gdp_lex_lm)$life_expectancy)
 
-#variance in the fitted values from your regression model
+# variance in the fitted values from your regression model
 fitted_var <- var(augment(gdp_lex_lm)$.fitted)
 
-#The variance in the residuals from your regression model.
+# The variance in the residuals from your regression model.
 resid_var <- var(augment(gdp_lex_lm)$.resid)
 
 
 # create matrix with 4 columns and 4 rows
-data= matrix(c(round(res_var, 2), round(fitted_var, 2), round(resid_var, 2)), ncol=3, byrow=TRUE)
+data <- matrix(c(round(res_var, 2), round(fitted_var, 2), round(resid_var, 2)), ncol = 3, byrow = TRUE)
 
 # specify the column names and row names of matrix
-colnames(data) = c('Response','Fitted Values','Residuals')
+colnames(data) <- c("Response", "Fitted Values", "Residuals")
 rownames(data) <- c("")
 
 
