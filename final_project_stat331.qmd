@@ -227,6 +227,8 @@ datatable(augmented,
 )
 ```
 
+To find the linear regression models for each continent, the average GDP and life expectancy was calculated for each country across all years. This way, each country has just one value for GDP (response variable) and one for life expectancy (explanatory variable). 
+
 ```{r}
 models <- gdp_lex |>
   group_by(Country) |>
