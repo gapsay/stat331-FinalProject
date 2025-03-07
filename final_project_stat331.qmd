@@ -35,7 +35,7 @@ All code, raw data, and project files are available in our [GitHub Repository](h
 
 # 1 Project Proposal + Data
 
-This analysis utilizes the [life expectancy](https://www.gapminder.org/data/) and the [gross domestic product](https://www.gapminder.org/data/) (GDP) datasets sourced [Gapminder](https://www.gapminder.org/about/about-gapminder/), a non-profit organization whose mission “is to fight devastating ignorance with a fact-based world view everyone could understand.” Their site provides data sets collected from many reputable sources and interactive visualizations on important world topics.
+This analysis utilizes the [life expectancy](https://www.gapminder.org/data/) and the [gross domestic product](https://www.gapminder.org/data/) (GDP) datasets sourced [Gapminder](https://www.gapminder.org/about/about-gapminder/), a non-profit organization whose mission “is to fight devastating ignorance with a fact-based world view everyone could understand.” Their site provides data sets collected from many reputable sources and interactive visualizations on important world topics. Additionally, we used a [countries by continent dataset](https://www.kaggle.com/datasets/hserdaraltan/countries-by-continent) from Daina Bouquin's dataset posted on Kaggle. The continents dataset provides continent classifications for countries, allowing us conduct continent-specific analysis in our study.
 
 ```{r data}
 lex_raw <- read.csv("../stat331-FinalProject/lex.csv")
