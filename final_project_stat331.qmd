@@ -40,7 +40,9 @@ This analysis utilizes the [life expectancy](https://www.gapminder.org/data/) an
 ```{r data}
 lex_raw <- read.csv("../stat331-FinalProject/lex.csv")
 gdp_pcap_raw <- read.csv("../stat331-FinalProject/gdp_pcap.csv")
-continents_raw <- read_csv("../stat331-FinalProject/country_by_continents.csv")
+continents_raw <- read.csv("../stat331-FinalProject/country_by_continents.csv")
+pop_raw <- read.csv("../stat331-FinalProject/GM-Population - Dataset - v7 - data-for-countries-etc-by-year.csv")
+
 ```
 
 ## 1.1 Data Cleaning
@@ -149,7 +151,17 @@ gdp_lex <- left_join(gdp_lex, continents,
 ) |>
   select(-country, -gdp_name)
 
+
+# Join the population data set
+# gdp_lex_with_continents_pop <- gdp_lex_with_continents |>
+#   mutate(year = as.numeric(year)) |>
+#   full_join(pop_raw |> mutate(time = as.numeric(time)),
+#             join_by("year" == "time", country == name)) |>
+#   arrange(country, year)
+
 ```
+
+
 
 After cleaning up each data set, we had to join the two together by our observational unit, country. We hypothesize that as GDP increases, life expectancy will also begin to increase, as a higher GDP correlates to better infrastructure and more/better access to healthcare and medicine.
 
@@ -355,4 +367,4 @@ as.table(data) |>
 
 ```
 
-Our table demonstrates that the model has a decent fit. Our proportion of variance, or R² value of 0.565, indicates about 56.5% of the total variation in life expectancy across countries is explained by our GDP based model. This means about 43.4% of the variation must be explained by other factors, such as healthcare spending, education levels, etc.
+Our table demonstrates that the model provides a moderate fit to the data. Our proportion of variance, or R² value of `r round(r_squared, 4)`, indicates about `r round(r_squared, 4)*100`% of the total variation in life expectancy across countries is explained by our GDP based model. This suggests that GDP plays a significant role in determining life expectancy, but is not the sole factor. The remaining `r 100 - round(r_squared, 4)*100`% of the variation must be explained by other factors, such as healthcare spending, education levels, and environmental factors. 
