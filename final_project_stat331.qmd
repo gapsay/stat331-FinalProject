@@ -194,10 +194,12 @@ ggplot(gdp_lex, aes(gdp, life_expectancy, color = Country)) +
 ```{r}
 gdp_lex_mean <- gdp_lex |>
   group_by(Country) |>
-  # averaged dp across all years per country
-  mutate(avg_gdp = mean(gdp, na.rm = TRUE))
+  summarize(
+    avg_gdp = mean(gdp, na.rm = TRUE),
+    avg_life_expectancy = mean(life_expectancy, na.rm = TRUE)
+  )
 
-gdp_lex_lm <- lm(life_expectancy ~ avg_gdp, data = gdp_lex_mean)
+gdp_lex_lm <- lm(avg_life_expectancy ~ avg_gdp, data = gdp_lex_mean)
 
 summary(gdp_lex_lm)
 
@@ -278,57 +280,56 @@ models |>
 
 $$ \hat{y} = 49.6 + 0.000151x $$
 
-- Intercept: When the average GDP of Asia is $0, the average life expectancy in Asia is 49.6 years. 
+-   Intercept: When the average GDP of Asia is \$0, the average life expectancy in Asia is 49.6 years.
 
-- Slope: For each additional $1 increase in average GDP in Asia, the life expectancy of a person in Asia will increase by 0.000151 years.  
+-   Slope: For each additional \$1 increase in average GDP in Asia, the life expectancy of a person in Asia will increase by 0.000151 years.
 
 #### Africa
 
 $$ \hat{y} = 45.5 + 0.000608x $$
 
-- Intercept: When the average GDP of Africa is $0$ dollars, the average life expectancy in Africa is $45.5$ years. 
+-   Intercept: When the average GDP of Africa is $0$ dollars, the average life expectancy in Africa is $45.5$ years.
 
-- Slope: For each additional $1$ dollar increase in average GDP in Africa, the life expectancy of a person in Africa will increase by $0.000608$ years.  
+-   Slope: For each additional $1$ dollar increase in average GDP in Africa, the life expectancy of a person in Africa will increase by $0.000608$ years.
 
 #### Europe
 
 $$ \hat{y} = 53.4 + 0.000296x $$
 
-- Intercept: When the average GDP of Europe is $0$ dollars, the average life expectancy in Europe is $53.4$ years. 
+-   Intercept: When the average GDP of Europe is $0$ dollars, the average life expectancy in Europe is $53.4$ years.
 
-- Slope: For each additional $1$ dollar increase in average GDP in Europe, the life expectancy of a person in Europe will increase by $0.000296$ years.  
+-   Slope: For each additional $1$ dollar increase in average GDP in Europe, the life expectancy of a person in Europe will increase by $0.000296$ years.
 
 #### South America
 
 $$ \hat{y} = 56 - 0.0000803x $$
 
-- Intercept: When the average GDP of South America is $0$ dollars, the average life expectancy in South America is $56$ years. 
+-   Intercept: When the average GDP of South America is $0$ dollars, the average life expectancy in South America is $56$ years.
 
-- Slope: For each additional $1$ dollar increase in average GDP in South America, the life expectancy of a person in South America will decrease by $0.0000803$ years.  
+-   Slope: For each additional $1$ dollar increase in average GDP in South America, the life expectancy of a person in South America will decrease by $0.0000803$ years.
 
 #### North America
 
 $$ \hat{y} = 48.1 + 0.000591x $$
 
-- Intercept: When the average GDP of North America is $0$ dollars, the average life expectancy in North America is $48.1$ years. 
+-   Intercept: When the average GDP of North America is $0$ dollars, the average life expectancy in North America is $48.1$ years.
 
-- Slope: For each additional $1$ dollar increase in average GDP in North America, the life expectancy of a person in North America will increase by $0.000591$ years. 
+-   Slope: For each additional $1$ dollar increase in average GDP in North America, the life expectancy of a person in North America will increase by $0.000591$ years.
 
 #### Oceania
 
 $$ \hat{y} = 47.2 + 0.000724x $$
 
-- Intercept: When the average GDP of Oceania is $0$ dollars, the average life expectancy in Oceania is $47.2$ years. 
+-   Intercept: When the average GDP of Oceania is $0$ dollars, the average life expectancy in Oceania is $47.2$ years.
 
-- Slope: For each additional $1$ dollar increase in average GDP in Oceania, the life expectancy of a person in Oceania will increase by $0.000724$ years.  
-
+-   Slope: For each additional $1$ dollar increase in average GDP in Oceania, the life expectancy of a person in Oceania will increase by $0.000724$ years.
 :::
 
 ## 2.3 Model Fit
 
 ```{r}
 # The variance in the response values.
-res_var <- var(augment(gdp_lex_lm)$life_expectancy)
+res_var <- var(augment(gdp_lex_lm)$avg_life_expectancy)
 
 # variance in the fitted values from your regression model
 fitted_var <- var(augment(gdp_lex_lm)$.fitted)
@@ -336,17 +337,22 @@ fitted_var <- var(augment(gdp_lex_lm)$.fitted)
 # The variance in the residuals from your regression model.
 resid_var <- var(augment(gdp_lex_lm)$.resid)
 
+# Calculate R-squared and proportion of variability explained
+r_squared <- fitted_var / res_var
 
 # create matrix with 4 columns and 4 rows
-data <- matrix(c(round(res_var, 2), round(fitted_var, 2), round(resid_var, 2)), ncol = 3, byrow = TRUE)
+data <- matrix(c(round(res_var, 2), round(fitted_var, 2), round(resid_var, 2), round(r_squared, 4)),
+  ncol = 4, byrow = TRUE
+)
 
 # specify the column names and row names of matrix
-colnames(data) <- c("Response", "Fitted Values", "Residuals")
+colnames(data) <- c("Response", "Fitted Values", "Residuals", "R²")
 rownames(data) <- c("")
-
 
 # display
 as.table(data) |>
-  kable(caption = "Variances")
+  kable(caption = "Variances and Model Fit")
 
 ```
+
+Our table demonstrates that the model has a decent fit. Our proportion of variance, or R² value of 0.565, indicates about 56.5% of the total variation in life expectancy across countries is explained by our GDP based model. This means about 43.4% of the variation must be explained by other factors, such as healthcare spending, education levels, etc.
