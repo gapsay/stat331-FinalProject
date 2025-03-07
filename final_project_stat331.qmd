@@ -162,8 +162,6 @@ gdp_lex <- left_join(gdp_lex, continents,
 
 ```
 
-
-
 After cleaning up each data set, we had to join the two together by our observational unit, country. We hypothesize that as GDP increases, life expectancy will also begin to increase, as a higher GDP correlates to better infrastructure and more/better access to healthcare and medicine.
 
 # 2 Linear Regressions
@@ -271,7 +269,7 @@ datatable(augmented,
 )
 ```
 
-To find the linear regression models for each continent, the average GDP and life expectancy was calculated for each country across all years. This way, each country has just one value for GDP (response variable) and one for life expectancy (explanatory variable). 
+To find the linear regression models for each continent, the average GDP and life expectancy was calculated for each country across all years. This way, each country has just one value for GDP (response variable) and one for life expectancy (explanatory variable).
 
 ```{r}
 models <- gdp_lex |>
@@ -413,4 +411,4 @@ as.table(data) |>
 
 ```
 
-Our table demonstrates that the model provides a moderate fit to the data. Our proportion of variance, or R² value of `r round(r_squared, 4)`, indicates about `r round(r_squared, 4)*100`% of the total variation in life expectancy across countries is explained by our GDP based model. This suggests that GDP plays a significant role in determining life expectancy, but is not the sole factor. The remaining `r 100 - round(r_squared, 4)*100`% of the variation must be explained by other factors, such as healthcare spending, education levels, and environmental factors. 
+Our table demonstrates that the model provides a moderate fit to the data. Our proportion of variance, or R² value of `r round(r_squared, 4)`, indicates about `r round(r_squared, 4)*100`% of the total variation in life expectancy across countries is explained by our GDP based model. This suggests that GDP plays a significant role in determining life expectancy, but is not the sole factor. The remaining `r 100 - round(r_squared, 4)*100`% of the variation must be explained by other factors, such as healthcare spending, education levels, and environmental factors.
