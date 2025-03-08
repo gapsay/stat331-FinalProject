@@ -36,6 +36,8 @@ All code, raw data, and project files are available in our [GitHub Repository](h
 
 This analysis utilizes the [life expectancy](https://www.gapminder.org/data/) and the [gross domestic product](https://www.gapminder.org/data/) (GDP) datasets sourced [Gapminder](https://www.gapminder.org/about/about-gapminder/), a non-profit organization whose mission “is to fight devastating ignorance with a fact-based world view everyone could understand.” Their site provides data sets collected from many reputable sources and interactive visualizations on important world topics. Additionally, we used a [countries by continent dataset](https://www.kaggle.com/datasets/hserdaraltan/countries-by-continent) from Daina Bouquin's dataset posted on Kaggle. The continents dataset provides continent classifications for countries, allowing us conduct continent-specific analysis in our study.
 
+We were interested in these data sets, as previous research has shown that GDP and life expectancy are related. A higher GDP per capita allows for better access to essential resources and services that improve health and longevity, such as better diet, healthcare, and sanitation. Additionally, GDP serves as an indicator of economic development. Countries with higher GDPs often have more advanced infrastructure and social services, which further extend life expectancy
+
 ```{r data}
 #| code-fold: TRUE
 lex_raw <- read.csv("../stat331-FinalProject/lex.csv")
@@ -155,7 +157,6 @@ gdp_lex <- left_join(gdp_lex, continents,
 
 After cleaning up each data set, we had to join the two together by our observational unit, country. We hypothesize that as GDP increases, life expectancy will also begin to increase, as a higher GDP correlates to better infrastructure and more/better access to healthcare and medicine.
 
-We were interested in these data sets, as previous research has shown that GDP and life expectancy are related. **NAT will finish after lab**
 
 # 2 Linear Regressions
 
@@ -247,19 +248,6 @@ gdp_lex_mean <- gdp_lex |>
   )
 
 gdp_lex_lm <- lm(avg_life_expectancy ~ avg_gdp, data = gdp_lex_mean)
-
-# summary(gdp_lex_lm)
-# 
-# augmented <- augment(gdp_lex_lm)
-# 
-# datatable(augmented,
-#   class = "cell-border stripe",
-#   colnames = c(
-#     "Life Expectancy", "Avg GDP", "Fitted Value",
-#     "Residual", "Predicted Value", "Standard Deviation",
-#     "Cook's D", "Standardized Residual"
-#   )
-# )
 ```
 
 To find the linear regression models for each continent, the average GDP and life expectancy was calculated for each country across all years. This way, each country has just one value for GDP (response variable) and one for life expectancy (explanatory variable).
@@ -389,17 +377,11 @@ resid_var <- var(augment(gdp_lex_lm)$.resid)
 # Calculate R-squared and proportion of variability explained
 r_squared <- fitted_var / res_var
 
-# create matrix with 4 columns and 4 rows
-data <- matrix(c(round(res_var, 2), round(fitted_var, 2), round(resid_var, 2), round(r_squared, 4)),
-  ncol = 4, byrow = TRUE
-)
-
-# specify the column names and row names of matrix
-colnames(data) <- c("Response", "Fitted Values", "Residuals", "R²")
-rownames(data) <- c("")
-
-# display
-as.table(data) |>
+#create table
+tibble("Response" = round(res_var, 2),
+       "Fitted Values" = round(fitted_var, 2),
+       "Residuals" = round(resid_var, 2),
+       "R²" = round(r_squared, 4)) |>
   kable(caption = "Variances and Model Fit")
 
 ```
