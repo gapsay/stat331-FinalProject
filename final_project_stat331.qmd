@@ -47,7 +47,7 @@ continents_raw <- read.csv("../stat331-FinalProject/country_by_continents.csv")
 
 ## 1.1 Data Cleaning
 
-In the raw GDP dataset, some values included a “k” suffix to represent thousands of dollars (e.g., 10,000 to 10k). The first step is to figure out a way to convert GDP values into numeric form. To keep values constant, we created a function that converts these abbreviated values into their full numeric form, allowing for accurate numeric comparisons. Without this step, any observations containing a “k” would be dropped, leaving it empty and could potentially affecting later analysis.
+In the raw GDP dataset, some values used a “k” suffix for thousands (e.g., 10k for 10,000). We created a function to convert these abbreviations into numeric form, ensuring accurate comparisons and preventing data loss in analysis.
 
 ```{r}
 clean_year <- function(str) {
@@ -107,7 +107,6 @@ We transformed each of the individual year columns into one singular column so t
 
 ## 1.3 Joining Datasets
 
-
 ```{r}
 # join both tables by country and year
 gdp_lex <- lex |>
@@ -156,7 +155,6 @@ gdp_lex <- left_join(gdp_lex, continents,
 ```
 
 After cleaning up each data set, we had to join the two together by our observational unit, country. We hypothesize that as GDP increases, life expectancy will also begin to increase, as a higher GDP correlates to better infrastructure and more/better access to healthcare and medicine.
-
 
 # 2 Linear Regressions
 
@@ -311,6 +309,8 @@ models |>
     locations = cells_column_labels(columns = p.value)
   )
 ```
+
+### Estimated Regression Models
 
 ::: panel-tabset
 #### Asia
