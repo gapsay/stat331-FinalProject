@@ -119,7 +119,7 @@ gdp_lex <- lex |>
   ) |>
   na.omit()
 
-#creating a data frame to add continent
+# creating a data frame to add continent
 country_mapping <- tibble(
   continent_name = c(
     "Burkina", "Burma (Myanmar)", "Congo", "Czechia",
@@ -139,7 +139,7 @@ country_mapping <- tibble(
   )
 )
 
-#altering continent to include Palestine
+# altering continent to include Palestine
 continents <- continents_raw |>
   add_row(Continent = "Asia", Country = "Palestine") |>
   left_join(country_mapping, by = c("Country" = "continent_name")) |>
@@ -172,11 +172,19 @@ continent_colors <- c(
   "Oceania" = "#66a61e",
   "South America" = "#e6ab02"
 )
+gdp_lex_mean <- gdp_lex |>
+  group_by(Country) |>
+  summarize(
+    avg_gdp = mean(gdp, na.rm = TRUE),
+    avg_life_expectancy = mean(life_expectancy, na.rm = TRUE)
+  ) |>
+  left_join(gdp_lex, join_by(Country == Country)) # add back continents
 
-ggplot(gdp_lex, aes(x = gdp, y = life_expectancy, color = Continent)) +
-  geom_smooth(method = "loess", se = TRUE, alpha = 0.2) +
+ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy, color = Continent)) +
   scale_x_log10() +
   scale_color_manual(values = continent_colors) +
+  geom_point() +
+  facet_grid(~Continent) +
   scale_alpha(range = c(0.2, 0.9), guide = "none") +
   theme_minimal() +
   labs(
@@ -201,6 +209,7 @@ ggplot(gdp_lex, aes(x = gdp, y = life_expectancy, color = Continent)) +
 ```{r}
 #| fig-width: 12
 #| fig.height: 8
+#| eval: false
 gdp_lex <- gdp_lex |>
   mutate(year = as.integer(year)) |>
   mutate(year = 1800 + (year - min(year))) |>
@@ -238,12 +247,12 @@ ggplot(gdp_lex, aes(gdp, life_expectancy, color = Continent)) +
 ## 2.2 Linear Regression
 
 ```{r}
-gdp_lex_mean <- gdp_lex |>
-  group_by(Country) |>
-  summarize(
-    avg_gdp = mean(gdp, na.rm = TRUE),
-    avg_life_expectancy = mean(life_expectancy, na.rm = TRUE)
-  )
+# gdp_lex_mean <- gdp_lex |>
+#   group_by(Country) |>
+#   summarize(
+#     avg_gdp = mean(gdp, na.rm = TRUE),
+#     avg_life_expectancy = mean(life_expectancy, na.rm = TRUE)
+#   )
 
 gdp_lex_lm <- lm(avg_life_expectancy ~ avg_gdp, data = gdp_lex_mean)
 ```
@@ -391,11 +400,13 @@ resid_var <- var(augment(gdp_lex_lm)$.resid)
 # Calculate R-squared and proportion of variability explained
 r_squared <- fitted_var / res_var
 
-#create table
-tibble("Response" = round(res_var, 2),
-       "Fitted Values" = round(fitted_var, 2),
-       "Residuals" = round(resid_var, 2),
-       "R²" = round(r_squared, 4)) |>
+# create table
+tibble(
+  "Response" = round(res_var, 2),
+  "Fitted Values" = round(fitted_var, 2),
+  "Residuals" = round(resid_var, 2),
+  "R²" = round(r_squared, 4)
+) |>
   kable(caption = "Variances and Model Fit")
 
 ```
