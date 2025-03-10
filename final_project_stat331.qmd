@@ -412,3 +412,27 @@ tibble(
 ```
 
 Our table demonstrates that the model provides a moderate fit to the data. Our proportion of variance, or R² value of `r round(r_squared, 4)`, indicates about `r round(r_squared, 4)*100`% of the total variation in life expectancy across countries is explained by our GDP based model. This suggests that GDP plays a role in determining life expectancy, but is not the sole factor. The remaining `r 100 - round(r_squared, 4)*100`% of the variation must be explained by other factors, such as healthcare spending, education levels, and environmental factors.
+
+## 3.1 Visualizing Simulations from the Model
+```{r}
+# predict function and random errors
+gdplex_mod <- lm(gdp ~ life_expectancy, gdp_lex)
+summary(gdplex_mod)
+
+gdplex_pred <- predict(gdplex_mod)
+
+gdplex_sig <- sigma(gdplex_mod)
+gdplex_sig
+```
+```{r}
+rand_error <- function(x, mean = 0, sd){
+  x + rnorm(length(x),
+            mean,
+            sd)
+}
+
+set.seed(12345)
+simulated <- tibble(sim_gdplex = rand_error(gdplex_pred,
+                                            sd = gdplex_sig))
+```
+
