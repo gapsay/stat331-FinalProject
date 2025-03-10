@@ -165,12 +165,12 @@ After cleaning up each data set, we had to join the two together by our observat
 #| fig.height: 8
 # Define color palette for continents
 continent_colors <- c(
-  "Africa" = "#E41A1C",
-  "Asia" = "#377EB8",
-  "Europe" = "#4DAF4A",
-  "North America" = "#984EA3",
-  "Oceania" = "#FF7F00",
-  "South America" = "#FFFF33"
+  "Africa" = "#1b9e77",
+  "Asia" = "#d95f02",
+  "Europe" = "#7570b3",
+  "North America" = "#e7298a",
+  "Oceania" = "#66a61e",
+  "South America" = "#e6ab02"
 )
 
 ggplot(gdp_lex, aes(x = gdp, y = life_expectancy, color = Continent)) +
