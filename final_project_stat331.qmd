@@ -12,6 +12,7 @@ execute:
   error: True
   message: False
   warning: False
+bibliography: references.bib
 ---
 
 ```{r packages}
