@@ -87,12 +87,13 @@ The GDP data was obtained from the Madison Project Database (MPD) and Penn World
 ```{r}
 # pivot year columns to a single year and gdp column
 gdp_pcap <- gdp_pcap_raw |>
+  select(country, X1800:X2019) |>
   mutate(across(
-    .cols = X1800:X2100,
+    .cols = X1800:X2019,
     .fns = ~ clean_year(.x)
   )) |>
   pivot_longer(
-    cols = X1800:X2100,
+    cols = X1800:X2019,
     names_to = "year",
     values_to = "gdp"
   ) |>
@@ -184,7 +185,7 @@ ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy, color = Continent
   scale_x_log10() +
   scale_color_manual(values = continent_colors) +
   geom_point() +
-  facet_grid(~Continent) +
+  facet_wrap(~Continent, nrow = 2) +
   scale_alpha(range = c(0.2, 0.9), guide = "none") +
   theme_minimal() +
   labs(
