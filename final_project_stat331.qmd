@@ -27,6 +27,7 @@ library(DT)
 library(gt)
 library(kableExtra)
 library(scales)
+library(bibtex)
 ```
 
 ### Reproducibility
