@@ -35,7 +35,7 @@ All code, raw data, and project files are available in our [GitHub Repository](h
 
 # 1 Project Proposal + Data
 
-This analysis utilizes the [life expectancy](https://www.gapminder.org/data/) and the [gross domestic product](https://www.gapminder.org/data/) (GDP) datasets sourced [Gapminder](https://www.gapminder.org/about/about-gapminder/), a non-profit organization whose mission “is to fight devastating ignorance with a fact-based world view everyone could understand.” Their site provides data sets collected from many reputable sources and interactive visualizations on important world topics. Additionally, we used a [countries by continent dataset](https://www.kaggle.com/datasets/hserdaraltan/countries-by-continent) from Daina Bouquin's dataset posted on Kaggle. The continents dataset provides continent classifications for countries, allowing us conduct continent-specific analysis in our study.
+This analysis utilizes the life expectancy and the gross domestic product (GDP) datasets sourced from Gapminder, a non-profit organization whose mission “is to fight devastating ignorance with a fact-based world view everyone could understand” [-@gapminderAbout]. Their site provides data sets collected from many reputable sources and interactive visualizations on important world topics. Additionally, we used a countries by continent dataset from Daina Bouquin posted on Kaggle [-@kaggleCountriesByContinent]. The dataset provides continent classifications for countries, allowing us conduct continent-specific analysis in our study.
 
 We were interested in these data sets, as previous research has shown that GDP and life expectancy are related. A higher GDP per capita allows for better access to essential resources and services that improve health and longevity, such as better diet, healthcare, and sanitation. Additionally, GDP serves as an indicator of economic development. Countries with higher GDPs often have more advanced infrastructure and social services, which further extend life expectancy
 
@@ -63,7 +63,7 @@ clean_year <- function(str) {
 
 ## 1.2 Pivoting Longer
 
-The life expectancy data contains information about the life expectancy for 196 countries from the year 1800 to 2019, and predictive data from 2020 to 2100. It provides the life expectancy in years for each country within the set. For the period from 1800 to 1970, the data was sourced from Gapminder’s main source v7: by Mattias Lindgren who assessed impacts from the biggest disasters in history in order to make rough estimates of life expectancy. Data for 1950-2019 was from the Global Burden of Disease Study 2019, which has 1950-2019 from the IHME. For 2020-2100, Gapminder used UN forecasts from the World Population Prospects 2022.
+The life expectancy data contains information about the life expectancy for 196 countries from the year 1800 to 2019, and predictive data from 2020 to 2100. It provides the life expectancy in years for each country within the set. For the period from 1800 to 1970, the data was sourced by Mattias Lindgren who assessed impacts from the biggest disasters in history in order to make rough estimates of life expectancy. Data for 1950-2019 was from the Global Burden of Disease Study 2019, which has 1950-2019 from the IHME. For 2020-2100, Gapminder used UN forecasts from the World Population Prospects 2022, [-@LEX].
 
 **Life Expectancy Info from:** <https://www.gapminder.org/data/documentation/gd004>
 
@@ -81,7 +81,7 @@ lex <- lex_raw |>
   )
 ```
 
-The GDP data was obtained from the Madison Project Database (MPD) and Penn World Table (PWT). This data set contains information on gross domestic product (GDP) per person adjusted for differences in purchasing power in international dollars, and fixed 2017 prices. GDP per capita measures the value of everything a country produces during a year, divided by the number of people. This set contains observations from 1800 to 2022. We transformed the data to have columns containing the country, year, and GDP of interest.  
+The GDP data was obtained from the Madison Project Database (MPD) and Penn World Table (PWT). This data set contains information on gross domestic product (GDP) per person adjusted for differences in purchasing power in international dollars, and fixed 2017 prices. GDP per capital measures the value of everything a country produces during a year, divided by the number of people. This set contains observations from 1800 to 2022. We transformed the data to have columns containing the country, year, and GDP of interest, [-@GDP].   
 
 **GDP Info from:** <https://www.gapminder.org/data/documentation/gd001/>
 
