@@ -419,11 +419,10 @@ Our table demonstrates that the model provides a moderate fit to the data. Our p
 ## 3.1 Visualizing Simulations from the Model
 ```{r}
 # predict function and random errors
-gdplex_mod <- lm(gdp ~ life_expectancy, gdp_lex)
-summary(gdplex_mod)
+gdplex_mod <- lm(avg_life_expectancy ~ avg_gdp, data = gdp_lex_mean) # note we have this already in gdp_lex_lm
 
 gdplex_pred <- predict(gdplex_mod)
-
+  
 gdplex_sig <- sigma(gdplex_mod)
 gdplex_sig
 ```
@@ -439,3 +438,33 @@ simulated <- tibble(sim_gdplex = rand_error(gdplex_pred,
                                             sd = gdplex_sig))
 ```
 
+```{r}
+full_data <- gdp_lex_mean |>
+  bind_cols(simulated)
+
+ggplot(full_data,
+       mapping = aes(x = avg_gdp,
+                     y = life_expectancy, 
+                     color = Continent)) +
+  geom_point(alpha = 0.4) +
+  scale_x_log10() +
+  scale_color_manual(values = continent_colors) +
+  theme_minimal() +
+  labs(title = "Average GDP per Capita vs Observed Average Life Expectancy",
+       x = "GDP per Capita (log scale)",
+       y = "",
+       subtitle = "Observed Life Expectancy (years)")
+
+ggplot(full_data,
+       mapping = aes(x = avg_gdp,
+                     y = sim_gdplex,
+                     color = Continent)) +
+  geom_point(alpha = 0.4) +
+  scale_x_log10() +
+  scale_color_manual(values = continent_colors) +
+  theme_minimal() +
+  labs(title = "Average GDP per Capita vs Simulated Average Life Expectancy",
+       x = "GDP per Capita (log scale)",
+       y = "",
+       subtitle = "Simulated Life Expectancy (years)")
+```
