@@ -256,8 +256,8 @@ gdp_lex_lm <- lm(avg_life_expectancy ~ avg_gdp, data = gdp_lex_mean)
 ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy)) +
   #scale_x_log10() +
   scale_color_manual(values = continent_colors) +
-  geom_point() +
-  geom_smooth(method = "lm") +
+  geom_point(aes(colour = Continent)) +
+  geom_smooth(method = "lm", colour = "black") +
   scale_alpha(range = c(0.2, 0.9), guide = "none") +
   theme_minimal() +
   labs(
@@ -466,8 +466,8 @@ full_data <- gdp_lex_mean |>
 
 ggplot(full_data, aes(x = avg_gdp, y = avg_sim_gdp))+
   scale_color_manual(values = continent_colors) +
-  geom_point() +
-  geom_smooth(method = "lm") +
+  geom_point(aes(colour = Continent)) +
+  geom_smooth(method = "lm", colour = "black") +
   scale_alpha(range = c(0.2, 0.9), guide = "none") +
   theme_minimal() +
   labs(
