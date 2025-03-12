@@ -187,7 +187,6 @@ ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy, color = Continent
   scale_x_log10() +
   scale_color_manual(values = continent_colors) +
   geom_point() +
-  facet_wrap(~Continent, nrow = 2) +
   scale_alpha(range = c(0.2, 0.9), guide = "none") +
   theme_minimal() +
   labs(
@@ -259,6 +258,34 @@ ggplot(gdp_lex, aes(gdp, life_expectancy, color = Continent)) +
 
 gdp_lex_lm <- lm(avg_life_expectancy ~ avg_gdp, data = gdp_lex_mean)
 ```
+
+```{r}
+ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy)) +
+  scale_x_log10() +
+  scale_color_manual(values = continent_colors) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  scale_alpha(range = c(0.2, 0.9), guide = "none") +
+  theme_minimal() +
+  labs(
+    title = "GDP per Capita vs Life Expectancy",
+    subtitle = "Non-linear relationship with confidence intervals by continent",
+    x = "GDP per Capita (log scale)",
+    y = "Life Expectancy (years)"
+  ) +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(face = "bold", size = 24),
+    axis.title = element_text(size = 18),
+    plot.subtitle = element_text(size = 18),
+    plot.caption = element_text(size = 14),
+    axis.text.x = element_text(size = 14),
+    axis.text.y = element_text(size = 14),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 14)
+  )
+```
+
 
 To find the linear regression models for each continent, the average GDP and life expectancy was calculated for each country across all years. This way, each country has just one value for GDP (response variable) and one for life expectancy (explanatory variable).
 
@@ -442,73 +469,24 @@ simulated <- tibble(sim_gdplex = rand_error(gdplex_pred,
 #| fig-width: 12
 #| fig.height: 8
 full_data <- gdp_lex_mean |>
-  bind_cols(simulated)
+  bind_cols(simulated) |>
+  group_by(Country) |>
+  summarize(avg_sim_gdp = mean(sim_gdplex, na.rm = TRUE)) |>
+  left_join(gdp_lex_mean, join_by(Country == Country))
 
-ggplot(full_data,
-       mapping = aes(x = avg_gdp,
-                     y = life_expectancy, 
-                     color = Continent)) +
-  geom_point(alpha = 0.4) +
-  scale_x_log10() +
-  scale_y_continuous(breaks = c(0, 20, 40, 60, 80, 100), limits = c(0,100)) +
-  scale_color_manual(values = continent_colors) +
-  theme_minimal() +
-  labs(title = "Average GDP per Capita vs Observed Average Life Expectancy",
-       x = "GDP per Capita (log scale)",
-       y = "",
-       subtitle = "Observed Life Expectancy (years)") +
-  theme(
-    legend.position = "right",
-    plot.title = element_text(face = "bold", size = 24),
-    axis.title = element_text(size = 18),
-    plot.subtitle = element_text(size = 18),
-    plot.caption = element_text(size = 14),
-    axis.text.x = element_text(size = 14),
-    axis.text.y = element_text(size = 14),
-    legend.title = element_text(size = 16),
-    legend.text = element_text(size = 14)
-  )
-
-ggplot(full_data,
-       mapping = aes(x = avg_gdp,
-                     y = sim_gdplex,
-                     color = Continent)) +
-  geom_point(alpha = 0.4) +
-  scale_x_log10() +
-  scale_y_continuous(breaks = c(0, 20, 40, 60, 80, 100), limits = c(0,100)) +
-  scale_color_manual(values = continent_colors) +
-  theme_minimal() +
-  labs(title = "Average GDP per Capita vs Simulated Average Life Expectancy",
-       x = "GDP per Capita (log scale)",
-       y = "",
-       subtitle = "Simulated Life Expectancy (years)") +
-  theme(
-    legend.position = "right",
-    plot.title = element_text(face = "bold", size = 24),
-    axis.title = element_text(size = 18),
-    plot.subtitle = element_text(size = 18),
-    plot.caption = element_text(size = 14),
-    axis.text.x = element_text(size = 14),
-    axis.text.y = element_text(size = 14),
-    legend.title = element_text(size = 16),
-    legend.text = element_text(size = 14)
-  )
-
-ggplot(full_data,
-       mapping = aes(color = Continent)) +
-  facet_wrap(~Continent, nrow = 2) +
-  geom_point(alpha = 0.4, aes(x = avg_gdp,
-                     y = life_expectancy)) +
-  geom_point(alpha = 0.4, aes(x = avg_gdp,
-                     y = sim_gdplex,
-                     color = "black")) +
+ggplot(full_data, aes(x = avg_gdp, y = avg_sim_gdp))+
   scale_x_log10() +
   scale_color_manual(values = continent_colors) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  scale_alpha(range = c(0.2, 0.9), guide = "none") +
   theme_minimal() +
-  labs(title = "Average GDP per Capita vs Observed Average Life and Simulated Expectancy Per Continent",
-       x = "GDP per Capita (log scale)",
-       y = "",
-       subtitle = "Observed Life Expectancy (years)") +
+  labs(
+    title = "GDP per Capita vs Life Expectancy",
+    subtitle = "Non-linear relationship with confidence intervals by continent",
+    x = "GDP per Capita (log scale)",
+    y = "Life Expectancy (years)"
+  ) +
   theme(
     legend.position = "right",
     plot.title = element_text(face = "bold", size = 24),
