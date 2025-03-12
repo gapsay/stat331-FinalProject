@@ -30,6 +30,13 @@ library(scales)
 library(bibtex)
 ```
 
+```{r seed}
+#| include: false
+
+set.seed(47984)
+```
+
+
 ### Reproducibility
 
 All code, raw data, and project files are available in our [GitHub Repository](https://github.com/gapsay/stat331-FinalProject/tree/main). Feel free to explore or replicate our analysis!
@@ -41,11 +48,9 @@ This analysis utilizes the life expectancy and the gross domestic product (GDP) 
 We were interested in these data sets, as previous research has shown that GDP and life expectancy are related. A higher GDP per capita allows for better access to essential resources and services that improve health and longevity, such as better diet, healthcare, and sanitation. Additionally, GDP serves as an indicator of economic development. Countries with higher GDPs often have more advanced infrastructure and social services, which further extend life expectancy
 
 ```{r data}
-#| code-fold: TRUE
-lex_raw <- read.csv("../stat331-FinalProject/lex.csv")
-gdp_pcap_raw <- read.csv("../stat331-FinalProject/gdp_pcap.csv")
-continents_raw <- read.csv("../stat331-FinalProject/country_by_continents.csv")
-set.seed(47984)
+lex <- read.csv("../stat331-FinalProject/lex.csv")
+gdp_pcap <- read.csv("../stat331-FinalProject/gdp_pcap.csv")
+continents <- read.csv("../stat331-FinalProject/country_by_continents.csv")
 ```
 
 ## 1.1 Data Cleaning
@@ -71,7 +76,7 @@ The life expectancy data contains information about the life expectancy for 196 
 
 ```{r}
 # pivot year columns to a single year and life expectancy column
-lex <- lex_raw |>
+lex <- lex |>
   pivot_longer(
     cols = X1800:X2100,
     names_to = "year",
@@ -89,7 +94,7 @@ The GDP data was obtained from the Madison Project Database (MPD) and Penn World
 
 ```{r}
 # pivot year columns to a single year and gdp column
-gdp_pcap <- gdp_pcap_raw |>
+gdp_pcap <- gdp_pcap |>
   select(country, X1800:X2019) |>
   mutate(across(
     .cols = X1800:X2019,
@@ -144,7 +149,7 @@ country_mapping <- tibble(
 )
 
 # altering continent to include Palestine
-continents <- continents_raw |>
+continents <- continents |>
   add_row(Continent = "Asia", Country = "Palestine") |>
   left_join(country_mapping, by = c("Country" = "continent_name")) |>
   mutate(combined = if_else(!is.na(gdp_name), gdp_name, Country))
@@ -167,6 +172,7 @@ After cleaning up each data set, we had to join the two together by our observat
 ```{r}
 #| fig-width: 12
 #| fig.height: 8
+
 # Define color palette for continents
 continent_colors <- c(
   "Africa" = "#1b9e77",
@@ -185,7 +191,6 @@ gdp_lex_mean <- gdp_lex |>
   left_join(gdp_lex, join_by(Country == Country)) # add back continents
 
 ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy, color = Continent)) +
-  #scale_x_log10() +
   scale_color_manual(values = continent_colors) +
   geom_point() +
   scale_alpha(range = c(0.2, 0.9), guide = "none") +
@@ -213,6 +218,7 @@ ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy, color = Continent
 #| fig-width: 12
 #| fig.height: 8
 #| eval: false
+
 gdp_lex <- gdp_lex |>
   mutate(year = as.integer(year)) |>
   mutate(year = 1800 + (year - min(year))) |>
@@ -254,7 +260,6 @@ gdp_lex_lm <- lm(avg_life_expectancy ~ avg_gdp, data = gdp_lex_mean)
 
 ```{r}
 ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy)) +
-  #scale_x_log10() +
   scale_color_manual(values = continent_colors) +
   geom_point(aes(colour = Continent)) +
   geom_smooth(method = "lm", colour = "black") +
