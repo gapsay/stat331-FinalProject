@@ -88,7 +88,7 @@ lex <- lex |>
   )
 ```
 
-The GDP data was obtained from the Madison Project Database (MPD) and Penn World Table (PWT). This data set contains information on gross domestic product (GDP) per person adjusted for differences in purchasing power in international dollars, and fixed 2017 prices. GDP per capital measures the value of everything a country produces during a year, divided by the number of people. This set contains observations from 1800 to 2022. We transformed the data to have columns containing the country, year, and GDP of interest, [-@GDP].   
+The GDP data was obtained from the Madison Project Database (MPD) and Penn World Table (PWT). This data set contains information on gross domestic product (GDP) per person adjusted for differences in purchasing power in international dollars, and fixed 2017 prices. GDP per capita measures the value of everything a country produces during a year, divided by the number of people. This set contains observations from 1800 to 2022. We transformed the data to have columns containing the country, year, and GDP of interest, [-@GDP].   
 
 **GDP Info from:** <https://www.gapminder.org/data/documentation/gd001/>
 
@@ -268,7 +268,7 @@ ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy)) +
   labs(
     title = "GDP per Capita vs Life Expectancy",
     subtitle = "Non-linear relationship with confidence intervals by continent",
-    x = "GDP per Capita (log scale)",
+    x = "log GDP per Capita",
     y = "Life Expectancy (years)"
   ) +
   theme(
@@ -286,9 +286,10 @@ ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy)) +
 
 ### Estimated Regression Model 
 
+The estimated regression model: 
 $$ \hat{y} = `r round(gdp_lex_lm$coeff[1], 2)` + `r round(gdp_lex_lm$coeff[2], 2)`x $$
 
-**NEED INTERPRETATIONS**
+corresponds to the scatter plot above of Life Expectancy vs. log GDP per Capita. $\hat{y}$ represents the predicted life expectancy (in years) and the $x$ represents the log-transformed GDP per capita. When the log-transformed GDP is 0 dollars, the estimated life expectancy is `r round(gdp_lex_lm$coeff[1], 2)` years. However, this value is not meaningful since real-world GDP per capita values are always positive, making a log-transformed value of zero unrealistic. The coefficient of the slope, `r round(gdp_lex_lm$coeff[2], 2)`, represents the expected change in life expectancy for a percentage change in GDP per capita. In other words, a 1% increase in GDP per capita leads to an increase of approximately `r round(gdp_lex_lm$coeff[2], 2)*0.01` years in life expectancy.
 
 ### Estimated Regression Models per Continent
 
