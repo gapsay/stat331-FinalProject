@@ -45,6 +45,7 @@ We were interested in these data sets, as previous research has shown that GDP a
 lex_raw <- read.csv("../stat331-FinalProject/lex.csv")
 gdp_pcap_raw <- read.csv("../stat331-FinalProject/gdp_pcap.csv")
 continents_raw <- read.csv("../stat331-FinalProject/country_by_continents.csv")
+set.seed(47984)
 ```
 
 ## 1.1 Data Cleaning
@@ -153,8 +154,8 @@ gdp_lex <- left_join(gdp_lex, continents,
   by = c("country" = "combined")
 ) |>
   select(-country, -gdp_name) |>
-  mutate(Continent = as.factor(Continent))
-
+  mutate(Continent = as.factor(Continent),
+         log_gdp = log(gdp))
 ```
 
 After cleaning up each data set, we had to join the two together by our observational unit, country. We hypothesize that as GDP increases, life expectancy will also begin to increase, as a higher GDP correlates to better infrastructure and more/better access to healthcare and medicine.
@@ -178,13 +179,13 @@ continent_colors <- c(
 gdp_lex_mean <- gdp_lex |>
   group_by(Country) |>
   summarize(
-    avg_gdp = mean(gdp, na.rm = TRUE),
+    avg_gdp = mean(log_gdp, na.rm = TRUE),
     avg_life_expectancy = mean(life_expectancy, na.rm = TRUE)
   ) |>
   left_join(gdp_lex, join_by(Country == Country)) # add back continents
 
 ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy, color = Continent)) +
-  scale_x_log10() +
+  #scale_x_log10() +
   scale_color_manual(values = continent_colors) +
   geom_point() +
   scale_alpha(range = c(0.2, 0.9), guide = "none") +
@@ -217,11 +218,10 @@ gdp_lex <- gdp_lex |>
   mutate(year = 1800 + (year - min(year))) |>
   drop_na()
 
-ggplot(gdp_lex, aes(gdp, life_expectancy, color = Continent)) +
+ggplot(gdp_lex, aes(log_gdp, life_expectancy, color = Continent)) +
   geom_point(alpha = 0.7, size = 2.5, show.legend = FALSE) +
   scale_color_manual(values = continent_colors) +
   scale_size(range = c(2, 12), guide = "none") +
-  scale_x_log10() +
   facet_wrap(~Continent) +
   theme_minimal() +
   theme(
@@ -249,19 +249,12 @@ ggplot(gdp_lex, aes(gdp, life_expectancy, color = Continent)) +
 ## 2.2 Linear Regression
 
 ```{r}
-# gdp_lex_mean <- gdp_lex |>
-#   group_by(Country) |>
-#   summarize(
-#     avg_gdp = mean(gdp, na.rm = TRUE),
-#     avg_life_expectancy = mean(life_expectancy, na.rm = TRUE)
-#   )
-
 gdp_lex_lm <- lm(avg_life_expectancy ~ avg_gdp, data = gdp_lex_mean)
 ```
 
 ```{r}
 ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy)) +
-  scale_x_log10() +
+  #scale_x_log10() +
   scale_color_manual(values = continent_colors) +
   geom_point() +
   geom_smooth(method = "lm") +
@@ -293,7 +286,7 @@ To find the linear regression models for each continent, the average GDP and lif
 models <- gdp_lex |>
   group_by(Country) |>
   mutate(
-    avg_gdp = mean(gdp, na.rm = TRUE),
+    avg_gdp = mean(log_gdp, na.rm = TRUE),
     avg_lex = mean(life_expectancy, na.rm = TRUE)
   ) |>
   distinct(Country, .keep_all = TRUE) |>
@@ -446,11 +439,9 @@ Our table demonstrates that the model provides a moderate fit to the data. Our p
 ## 3.1 Visualizing Simulations from the Model
 ```{r}
 # predict function and random errors
-gdplex_mod <- lm(avg_life_expectancy ~ avg_gdp, data = gdp_lex_mean) # note we have this already in gdp_lex_lm
-
-gdplex_pred <- predict(gdplex_mod)
+gdplex_pred <- predict(gdp_lex_lm)
   
-gdplex_sig <- sigma(gdplex_mod)
+gdplex_sig <- sigma(gdp_lex_lm)
 gdplex_sig
 ```
 ```{r}
@@ -460,7 +451,6 @@ rand_error <- function(x, mean = 0, sd){
             sd)
 }
 
-set.seed(12345)
 simulated <- tibble(sim_gdplex = rand_error(gdplex_pred,
                                             sd = gdplex_sig))
 ```
@@ -475,7 +465,6 @@ full_data <- gdp_lex_mean |>
   left_join(gdp_lex_mean, join_by(Country == Country))
 
 ggplot(full_data, aes(x = avg_gdp, y = avg_sim_gdp))+
-  scale_x_log10() +
   scale_color_manual(values = continent_colors) +
   geom_point() +
   geom_smooth(method = "lm") +
