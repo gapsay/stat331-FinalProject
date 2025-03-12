@@ -255,10 +255,6 @@ ggplot(gdp_lex, aes(log_gdp, life_expectancy, color = Continent)) +
 ## 2.2 Linear Regression
 
 ```{r}
-gdp_lex_lm <- lm(avg_life_expectancy ~ avg_gdp, data = gdp_lex_mean)
-```
-
-```{r}
 ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy)) +
   scale_color_manual(values = continent_colors) +
   geom_point(aes(colour = Continent)) +
@@ -266,7 +262,7 @@ ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy)) +
   scale_alpha(range = c(0.2, 0.9), guide = "none") +
   theme_minimal() +
   labs(
-    title = "GDP per Capita vs Life Expectancy",
+    title = "log GDP per Capita vs Life Expectancy",
     subtitle = "Non-linear relationship with confidence intervals by continent",
     x = "log GDP per Capita",
     y = "Life Expectancy (years)"
@@ -285,6 +281,31 @@ ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy)) +
 ```
 
 ### Estimated Regression Model 
+
+```{r}
+gdp_lex_lm <- lm(avg_life_expectancy ~ avg_gdp, data = gdp_lex_mean)
+
+gdp_lex_lm |>
+  tidy() |> 
+  mutate(term = case_when(term %in% "(Intercept)" ~ "Intercept", 
+                          term %in% "avg_gdp" ~ "Slope")) |> 
+  gt() |> 
+  tab_header(title = md("**Regression Model Estimates**"), 
+             subtitle = "Average Life Expectancy vs Average logGDP") |> 
+  fmt_number(columns = c(estimate, std.error, statistic, p.value), 
+             decimals = 2) |> 
+  data_color(columns = p.value, 
+             colors = col_numeric(palette = c("green", "yellow", "red"), 
+                                  domain = c(0, 0.05, 1))) |> 
+  cols_label(estimate = "Estimate", std.error = "Std. Error", 
+             statistic = "t-Statistic", p.value = "p-Value", 
+             term = "Term") |> 
+  tab_style(style = list(cell_fill(color = "lightgray"), 
+                         cell_text(weight = "bold")), 
+            locations = cells_row_groups()) |> 
+  tab_footnote(footnote = "P-values below 0.05 indicate statistical significance.", 
+               locations = cells_column_labels(columns = p.value))
+```
 
 The estimated regression model: 
 $$ \hat{y} = `r round(gdp_lex_lm$coeff[1], 2)` + `r round(gdp_lex_lm$coeff[2], 2)`x $$
@@ -366,6 +387,21 @@ models |>
 ::: panel-tabset
 #### Asia
 
+```{r}
+gdp_lex_mean |> 
+  filter(Continent == "Asia") |> 
+  ggplot(aes(x = avg_gdp, y = avg_life_expectancy)) +
+  scale_color_manual(values = continent_colors) +
+  geom_point(aes(colour = Continent)) +
+  geom_smooth(method = "lm", colour = "black") +
+  theme_minimal() +
+  labs(
+    title = "log GDP per Capita vs Life Expectancy",
+    subtitle = "Asia",
+    x = "log GDP per Capita",
+    y = "Life Expectancy (years)")
+```
+
 $$ \hat{y} = `r round(models$estimate[1], 2)` + `r round(models$estimate[2], 2)`x $$
 
 -   Intercept: When the average GDP of Asia is 0 dollars, the average life expectancy in Asia is `r round(models$estimate[1], 2)` years.
@@ -373,6 +409,22 @@ $$ \hat{y} = `r round(models$estimate[1], 2)` + `r round(models$estimate[2], 2)`
 -   Slope: For each additional 1 dollar increase in average GDP in Asia, the life expectancy of a person in Asia will increase by `r round(models$estimate[2], 2)` years.
 
 #### Africa
+
+```{r}
+gdp_lex_mean |> 
+  filter(Continent == "Africa") |> 
+  ggplot(aes(x = avg_gdp, y = avg_life_expectancy)) +
+  scale_color_manual(values = continent_colors) +
+  geom_point(aes(colour = Continent)) +
+  geom_smooth(method = "lm", colour = "black") +
+  theme_minimal() +
+  labs(
+    title = "log GDP per Capita vs Life Expectancy",
+    subtitle = "Africa",
+    x = "log GDP per Capita",
+    y = "Life Expectancy (years)")
+```
+
 
 $$ \hat{y} = `r round(models$estimate[3], 2)` + `r round(models$estimate[4], 2)`x $$
 
@@ -382,6 +434,21 @@ $$ \hat{y} = `r round(models$estimate[3], 2)` + `r round(models$estimate[4], 2)`
 
 #### Europe
 
+```{r}
+gdp_lex_mean |> 
+  filter(Continent == "Europe") |> 
+  ggplot(aes(x = avg_gdp, y = avg_life_expectancy)) +
+  scale_color_manual(values = continent_colors) +
+  geom_point(aes(colour = Continent)) +
+  geom_smooth(method = "lm", colour = "black") +
+  theme_minimal() +
+  labs(
+    title = "log GDP per Capita vs Life Expectancy",
+    subtitle = "Europe",
+    x = "log GDP per Capita",
+    y = "Life Expectancy (years)")
+```
+
 $$ \hat{y} = `r round(models$estimate[5], 2)` + `r round(models$estimate[6], 2)`x $$
 
 -   Intercept: When the average GDP of Europe is 0 dollars, the average life expectancy in Europe is `r round(models$estimate[5], 2)` years.
@@ -389,6 +456,21 @@ $$ \hat{y} = `r round(models$estimate[5], 2)` + `r round(models$estimate[6], 2)`
 -   Slope: For each additional 1 dollar increase in average GDP in Europe, the life expectancy of a person in Europe will increase by `r round(models$estimate[6], 2)` years.
 
 #### South America
+
+```{r}
+gdp_lex_mean |> 
+  filter(Continent == "South America") |> 
+  ggplot(aes(x = avg_gdp, y = avg_life_expectancy)) +
+  scale_color_manual(values = continent_colors) +
+  geom_point(aes(colour = Continent)) +
+  geom_smooth(method = "lm", colour = "black") +
+  theme_minimal() +
+  labs(
+    title = "log GDP per Capita vs Life Expectancy",
+    subtitle = "South America",
+    x = "log GDP per Capita",
+    y = "Life Expectancy (years)")
+```
 
 $$ \hat{y} = `r round(models$estimate[7], 2)` + `r round(models$estimate[8], 2)`x $$
 
@@ -398,6 +480,21 @@ $$ \hat{y} = `r round(models$estimate[7], 2)` + `r round(models$estimate[8], 2)`
 
 #### North America
 
+```{r}
+gdp_lex_mean |> 
+  filter(Continent == "North America") |> 
+  ggplot(aes(x = avg_gdp, y = avg_life_expectancy)) +
+  scale_color_manual(values = continent_colors) +
+  geom_point(aes(colour = Continent)) +
+  geom_smooth(method = "lm", colour = "black") +
+  theme_minimal() +
+  labs(
+    title = "log GDP per Capita vs Life Expectancy",
+    subtitle = "North America",
+    x = "log GDP per Capita",
+    y = "Life Expectancy (years)")
+```
+
 $$ \hat{y} = `r round(models$estimate[9], 2)` + `r round(models$estimate[10], 2)`x $$
 
 -   Intercept: When the average GDP of North America is 0 dollars, the average life expectancy in North America is `r round(models$estimate[9], 2)` years.
@@ -405,6 +502,21 @@ $$ \hat{y} = `r round(models$estimate[9], 2)` + `r round(models$estimate[10], 2)
 -   Slope: For each additional 1 dollar increase in average GDP in North America, the life expectancy of a person in North America will increase by `r round(models$estimate[10], 2)` years.
 
 #### Oceania
+
+```{r}
+gdp_lex_mean |> 
+  filter(Continent == "Oceania") |> 
+  ggplot(aes(x = avg_gdp, y = avg_life_expectancy)) +
+  scale_color_manual(values = continent_colors) +
+  geom_point(aes(colour = Continent)) +
+  geom_smooth(method = "lm", colour = "black") +
+  theme_minimal() +
+  labs(
+    title = "log GDP per Capita vs Life Expectancy",
+    subtitle = "Oceania",
+    x = "log GDP per Capita",
+    y = "Life Expectancy (years)")
+```
 
 $$ \hat{y} = `r round(models$estimate[11], 2)` + `r round(models$estimate[12], 2)`x $$
 
