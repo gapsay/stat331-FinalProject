@@ -279,6 +279,15 @@ ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy)) +
   )
 ```
 
+### Estimated Regression Model 
+
+$$ \hat{y} = `r round(gdp_lex_lm$coeff[1], 2)` + `r round(gdp_lex_lm$coeff[2], 2)`x $$
+
+**NEED INTERPRETATIONS**
+
+### Estimated Regression Models per Continent
+
+**NEED TO FIX INTERPRETATIONS**
 
 To find the linear regression models for each continent, the average GDP and life expectancy was calculated for each country across all years. This way, each country has just one value for GDP (response variable) and one for life expectancy (explanatory variable).
 
@@ -310,17 +319,9 @@ models |>
     subtitle = "Average Life Expectancy vs Average GDP"
   ) |>
   fmt_number(
-    columns = c(std.error),
-    decimals = 5
-  ) |> 
-  fmt_number(
-    columns = c(estimate),
-    decimals = 4
-  ) |>
-  fmt_number(
-    columns = c(statistic),
+    columns = c(std.error, estimate, statistic),
     decimals = 2
-  ) |>
+  ) |> 
   fmt_number(
     columns = c(p.value),
     decimals = 3
@@ -356,56 +357,54 @@ models |>
   )
 ```
 
-### Estimated Regression Models
-
 ::: panel-tabset
 #### Asia
 
-$$ \hat{y} = 49.6 + 0.000151x $$
+$$ \hat{y} = `r round(models$estimate[1], 2)` + `r round(models$estimate[2], 2)`x $$
 
--   Intercept: When the average GDP of Asia is \$0, the average life expectancy in Asia is 49.6 years.
+-   Intercept: When the average GDP of Asia is 0 dollars, the average life expectancy in Asia is `r round(models$estimate[1], 2)` years.
 
--   Slope: For each additional \$1 increase in average GDP in Asia, the life expectancy of a person in Asia will increase by 0.000151 years.
+-   Slope: For each additional 1 dollar increase in average GDP in Asia, the life expectancy of a person in Asia will increase by `r round(models$estimate[2], 2)` years.
 
 #### Africa
 
-$$ \hat{y} = 45.5 + 0.000608x $$
+$$ \hat{y} = `r round(models$estimate[3], 2)` + `r round(models$estimate[4], 2)`x $$
 
--   Intercept: When the average GDP of Africa is $0$ dollars, the average life expectancy in Africa is $45.5$ years.
+-   Intercept: When the average GDP of Africa is 0 dollars, the average life expectancy in Africa is `r round(models$estimate[3], 2)` years.
 
--   Slope: For each additional $1$ dollar increase in average GDP in Africa, the life expectancy of a person in Africa will increase by $0.000608$ years.
+-   Slope: For each additional 1 dollar increase in average GDP in Africa, the life expectancy of a person in Africa will increase by `r round(models$estimate[4], 2)` years.
 
 #### Europe
 
-$$ \hat{y} = 53.4 + 0.000296x $$
+$$ \hat{y} = `r round(models$estimate[5], 2)` + `r round(models$estimate[6], 2)`x $$
 
--   Intercept: When the average GDP of Europe is $0$ dollars, the average life expectancy in Europe is $53.4$ years.
+-   Intercept: When the average GDP of Europe is 0 dollars, the average life expectancy in Europe is `r round(models$estimate[5], 2)` years.
 
--   Slope: For each additional $1$ dollar increase in average GDP in Europe, the life expectancy of a person in Europe will increase by $0.000296$ years.
+-   Slope: For each additional 1 dollar increase in average GDP in Europe, the life expectancy of a person in Europe will increase by `r round(models$estimate[6], 2)` years.
 
 #### South America
 
-$$ \hat{y} = 56 - 0.0000803x $$
+$$ \hat{y} = `r round(models$estimate[7], 2)` + `r round(models$estimate[8], 2)`x $$
 
--   Intercept: When the average GDP of South America is $0$ dollars, the average life expectancy in South America is $56$ years.
+-   Intercept: When the average GDP of South America is 0 dollars, the average life expectancy in South America is `r round(models$estimate[7], 2)` years.
 
--   Slope: For each additional $1$ dollar increase in average GDP in South America, the life expectancy of a person in South America will decrease by $0.0000803$ years.
+-   Slope: For each additional 1 dollar increase in average GDP in South America, the life expectancy of a person in South America will increase by `r round(models$estimate[8], 2)` years.
 
 #### North America
 
-$$ \hat{y} = 48.1 + 0.000591x $$
+$$ \hat{y} = `r round(models$estimate[9], 2)` + `r round(models$estimate[10], 2)`x $$
 
--   Intercept: When the average GDP of North America is $0$ dollars, the average life expectancy in North America is $48.1$ years.
+-   Intercept: When the average GDP of North America is 0 dollars, the average life expectancy in North America is `r round(models$estimate[9], 2)` years.
 
--   Slope: For each additional $1$ dollar increase in average GDP in North America, the life expectancy of a person in North America will increase by $0.000591$ years.
+-   Slope: For each additional 1 dollar increase in average GDP in North America, the life expectancy of a person in North America will increase by `r round(models$estimate[10], 2)` years.
 
 #### Oceania
 
-$$ \hat{y} = 47.2 + 0.000724x $$
+$$ \hat{y} = `r round(models$estimate[11], 2)` + `r round(models$estimate[12], 2)`x $$
 
--   Intercept: When the average GDP of Oceania is $0$ dollars, the average life expectancy in Oceania is $47.2$ years.
+-   Intercept: When the average GDP of Oceania is 0 dollars, the average life expectancy in Oceania is `r round(models$estimate[11], 2)` years.
 
--   Slope: For each additional $1$ dollar increase in average GDP in Oceania, the life expectancy of a person in Oceania will increase by $0.000724$ years.
+-   Slope: For each additional 1 dollar increase in average GDP in Oceania, the life expectancy of a person in Oceania will increase by `r round(models$estimate[12], 2)` years.
 :::
 
 ## 2.3 Model Fit
