@@ -28,6 +28,7 @@ library(gt)
 library(kableExtra)
 library(scales)
 library(bibtex)
+library(dplyr)
 ```
 
 ```{r seed}
@@ -159,8 +160,7 @@ gdp_lex <- left_join(gdp_lex, continents,
   by = c("country" = "combined")
 ) |>
   select(-country, -gdp_name) |>
-  mutate(Continent = as.factor(Continent),
-         log_gdp = log(gdp))
+  mutate(Continent = as.factor(Continent))
 ```
 
 After cleaning up each data set, we had to join the two together by our observational unit, country. We hypothesize that as GDP increases, life expectancy will also begin to increase, as a higher GDP correlates to better infrastructure and more/better access to healthcare and medicine.
@@ -185,7 +185,7 @@ continent_colors <- c(
 gdp_lex_mean <- gdp_lex |>
   group_by(Country) |>
   summarize(
-    avg_gdp = mean(log_gdp, na.rm = TRUE),
+    avg_gdp = mean(gdp, na.rm = TRUE),
     avg_life_expectancy = mean(life_expectancy, na.rm = TRUE)
   ) |>
   left_join(gdp_lex, join_by(Country == Country)) # add back continents
@@ -198,7 +198,7 @@ ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy, color = Continent
   labs(
     title = "GDP per Capita vs Life Expectancy",
     subtitle = "Non-linear relationship with confidence intervals by continent",
-    x = "GDP per Capita (log scale)",
+    x = "GDP per Capita",
     y = "Life Expectancy (years)"
   ) +
   theme(
@@ -213,18 +213,28 @@ ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy, color = Continent
     legend.text = element_text(size = 14)
   )
 ```
+```{r}
+gdp_lex <- gdp_lex |>
+  mutate(year = as.integer(year), 
+         log_gdp = log(gdp)) |>
+  mutate(year = 1800 + (year - min(year))) |>
+  drop_na()
+
+gdp_lex_mean <- gdp_lex |>
+  group_by(Country) |>
+  summarize(
+    avg_gdp = mean(log_gdp, na.rm = TRUE),
+    avg_life_expectancy = mean(life_expectancy, na.rm = TRUE)
+  ) |>
+  left_join(gdp_lex, join_by(Country == Country)) # add back continents
+```
 
 ```{r}
 #| fig-width: 12
 #| fig.height: 8
 #| eval: false
 
-gdp_lex <- gdp_lex |>
-  mutate(year = as.integer(year)) |>
-  mutate(year = 1800 + (year - min(year))) |>
-  drop_na()
-
-ggplot(gdp_lex, aes(log_gdp, life_expectancy, color = Continent)) +
+ggplot(gdp_lex, aes(avg_gdp, life_expectancy, color = Continent)) +
   geom_point(alpha = 0.7, size = 2.5, show.legend = FALSE) +
   scale_color_manual(values = continent_colors) +
   scale_size(range = c(2, 12), guide = "none") +
@@ -252,6 +262,10 @@ ggplot(gdp_lex, aes(log_gdp, life_expectancy, color = Continent)) +
   ease_aes("linear")
 ```
 
+```{r}
+gdp_lex_lm <- lm(avg_life_expectancy ~ avg_gdp, data = gdp_lex_mean)
+```
+
 ## 2.2 Linear Regression
 
 ```{r}
@@ -263,7 +277,6 @@ ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy)) +
   theme_minimal() +
   labs(
     title = "log GDP per Capita vs Life Expectancy",
-    subtitle = "Non-linear relationship with confidence intervals by continent",
     x = "log GDP per Capita",
     y = "Life Expectancy (years)"
   ) +
@@ -280,10 +293,10 @@ ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy)) +
   )
 ```
 
+
 ### Estimated Regression Model 
 
 ```{r}
-gdp_lex_lm <- lm(avg_life_expectancy ~ avg_gdp, data = gdp_lex_mean)
 
 gdp_lex_lm |>
   tidy() |> 
@@ -308,9 +321,9 @@ gdp_lex_lm |>
 ```
 
 The estimated regression model: 
-$$ \hat{y} = `r round(gdp_lex_lm$coeff[1], 2)` + `r round(gdp_lex_lm$coeff[2], 2)`x $$
+$$ \hat{y} = `r round(tidy(gdp_lex_lm)$estimate[1], 2)` + `r round(tidy(gdp_lex_lm)$estimate[2], 2)`x $$
 
-corresponds to the scatter plot above of Life Expectancy vs. log GDP per Capita. $\hat{y}$ represents the predicted life expectancy (in years) and the $x$ represents the log-transformed GDP per capita. When the log-transformed GDP is 0 dollars, the estimated life expectancy is `r round(gdp_lex_lm$coeff[1], 2)` years. However, this value is not meaningful since real-world GDP per capita values are always positive, making a log-transformed value of zero unrealistic. The coefficient of the slope, `r round(gdp_lex_lm$coeff[2], 2)`, represents the expected change in life expectancy for a percentage change in GDP per capita. In other words, a 1% increase in GDP per capita leads to an increase of approximately `r round(gdp_lex_lm$coeff[2], 2)*0.01` years in life expectancy.
+corresponds to the scatter plot above of Life Expectancy vs. log GDP per Capita. $\hat{y}$ represents the predicted life expectancy (in years) and the $x$ represents the log-transformed GDP per capita. When the log-transformed GDP is 0 dollars, the estimated life expectancy is `r round(tidy(gdp_lex_lm)$estimate[1], 2)` years. However, this value is not meaningful since real-world GDP per capita values are always positive, making a log-transformed value of zero unrealistic. The coefficient of the slope, `r round(tidy(gdp_lex_lm)$estimate[2], 2)`, represents the expected change in life expectancy for a percentage change in GDP per capita. In other words, a 1% increase in GDP per capita leads to an increase of approximately `r round(tidy(gdp_lex_lm)$estimate[2], 2)*0.01` years in life expectancy.
 
 ### Estimated Regression Models per Continent
 
