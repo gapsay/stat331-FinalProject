@@ -28,7 +28,6 @@ library(gt)
 library(kableExtra)
 library(scales)
 library(bibtex)
-library(dplyr)
 library(patchwork)
 ```
 
@@ -36,7 +35,6 @@ library(patchwork)
 #| include: false
 set.seed(47984)
 ```
-
 
 ### Reproducibility
 
@@ -46,7 +44,7 @@ All code, raw data, and project files are available in our [GitHub Repository](h
 
 This analysis utilizes the life expectancy and the gross domestic product (GDP) datasets sourced from Gapminder, a non-profit organization whose mission “is to fight devastating ignorance with a fact-based world view everyone could understand” [-@gapminderAbout]. Their site provides data sets collected from many reputable sources and interactive visualizations on important world topics. Additionally, we used a countries by continent dataset from Daina Bouquin posted on Kaggle [-@kaggleCountriesByContinent]. The dataset provides continent classifications for countries, allowing us conduct continent-specific analysis in our study.
 
-We were interested in these data sets, as previous research has shown that GDP and life expectancy are related. A higher GDP per capita allows for better access to essential resources and services that improve health and longevity, such as better diet, healthcare, and sanitation. Additionally, GDP serves as an indicator of economic development. Countries with higher GDPs often have more advanced infrastructure and social services, which further extend life expectancy
+We were interested in these data sets, as previous research has shown that GDP and life expectancy are related. A higher GDP per capita allows for better access to essential resources and services that improve health and longevity, such as better diet, healthcare, and sanitation. Additionally, GDP serves as an indicator of economic development. Countries with higher GDPs often have more advanced infrastructure and social services, which further extend life expectancy [-@Jones_GDP].
 
 ```{r data}
 lex <- read.csv("../stat331-FinalProject/lex.csv")
@@ -89,7 +87,7 @@ lex <- lex |>
   )
 ```
 
-The GDP data was obtained from the Madison Project Database (MPD) and Penn World Table (PWT). This data set contains information on gross domestic product (GDP) per person adjusted for differences in purchasing power in international dollars, and fixed 2017 prices. GDP per capita measures the value of everything a country produces during a year, divided by the number of people. This set contains observations from 1800 to 2022. We transformed the data to have columns containing the country, year, and GDP of interest, [-@GDP].   
+The GDP data was obtained from the Madison Project Database (MPD) and Penn World Table (PWT). This data set contains information on gross domestic product (GDP) per person adjusted for differences in purchasing power in international dollars, and fixed 2017 prices. GDP per capita measures the value of everything a country produces during a year, divided by the number of people. This set contains observations from 1800 to 2022. We transformed the data to have columns containing the country, year, and GDP of interest, [-@GDP].
 
 **GDP Info from:** <https://www.gapminder.org/data/documentation/gd001/>
 
@@ -113,7 +111,7 @@ gdp_pcap <- gdp_pcap |>
   )
 ```
 
-We transformed each of the individual year columns into one singular column so that the dataset would be easier to read. As a result, each observation consists of one country and year, with the corresponding life expectancy. The raw GDP data is similar to the life expectancy data in that each year has its own column. So we transformed the data in a similar way, making year its own column with its corresponding GDP. For accuracy, we are only using observations from 1800 to 2019, and none of the predicted data. 
+We transformed each of the individual year columns into one singular column so that the dataset would be easier to read. As a result, each observation consists of one country and year, with the corresponding life expectancy. The raw GDP data is similar to the life expectancy data in that each year has its own column. So we transformed the data in a similar way, making year its own column with its corresponding GDP. For accuracy, we are only using observations from 1800 to 2019, and none of the predicted data.
 
 ## 1.3 Joining Datasets
 
@@ -266,9 +264,10 @@ ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy)) +
   scale_alpha(range = c(0.2, 0.9), guide = "none") +
   theme_minimal() +
   labs(
-    title = "log GDP per Capita vs Life Expectancy",
-    x = "log GDP per Capita",
-    y = "Life Expectancy (years)"
+    title = "Life Expectancy vs Log GDP per Capita",
+    x = expression(log[10]("GDP per Capita")),
+    y = "",
+    subtitle = "Life Expectancy (years)"
   ) +
   theme(
     legend.position = "right",
@@ -283,8 +282,7 @@ ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy)) +
   )
 ```
 
-
-### Estimated Regression Model 
+### Estimated Regression Model
 
 ```{r}
 
@@ -310,14 +308,11 @@ gdp_lex_lm |>
                locations = cells_column_labels(columns = p.value))
 ```
 
-The estimated regression model: 
-$$ \hat{y} = `r round(tidy(gdp_lex_lm)$estimate[1], 2)` + `r round(tidy(gdp_lex_lm)$estimate[2], 2)`x $$
+The estimated regression model: $$ \hat{Life Expectancy} = `r round(tidy(gdp_lex_lm)$estimate[1], 2)` + `r round(tidy(gdp_lex_lm)$estimate[2], 2)`*\log_{10}(GDP) $$
 
-corresponds to the scatter plot above of Life Expectancy vs. log GDP per Capita. $\hat{y}$ represents the predicted life expectancy (in years) and the $x$ represents the log-transformed GDP per capita. When the log-transformed GDP is 0 dollars, the estimated life expectancy is `r round(tidy(gdp_lex_lm)$estimate[1], 2)` years. However, this value is not meaningful since real-world GDP per capita values are always positive, making a log-transformed value of zero unrealistic. The coefficient of the slope, `r round(tidy(gdp_lex_lm)$estimate[2], 2)`, represents the expected change in life expectancy for a percentage change in GDP per capita. In other words, a 1% increase in GDP per capita leads to an increase of approximately `r round(tidy(gdp_lex_lm)$estimate[2], 2)*0.01` years in life expectancy.
+corresponds to the scatter plot above of Life Expectancy vs. log GDP per Capita. $\hat{Life Expectancy}$ represents the predicted life expectancy (in years) and the $\log_{10}(GDP)$ represents the log-transformed GDP per capita. When the log-transformed GDP is 0 dollars, the estimated life expectancy is `r round(tidy(gdp_lex_lm)$estimate[1], 2)` years. However, this value is not meaningful since real-world GDP per capita values are always positive, making a log-transformed value of zero unrealistic. The coefficient of the slope, `r round(tidy(gdp_lex_lm)$estimate[2], 2)`, represents the expected change in life expectancy for a percentage change in GDP per capita. In other words, a 1% increase in GDP per capita leads to an increase of approximately `r round(tidy(gdp_lex_lm)$estimate[2], 2)*0.01` years in life expectancy.
 
 ### Estimated Regression Models per Continent
-
-**NEED TO FIX INTERPRETATIONS**
 
 To find the linear regression models for each continent, the average GDP and life expectancy was calculated for each country across all years. This way, each country has just one value for GDP (response variable) and one for life expectancy (explanatory variable).
 
@@ -401,15 +396,15 @@ gdp_lex_mean |>
   labs(
     title = "log GDP per Capita vs Life Expectancy",
     subtitle = "Asia",
-    x = "log GDP per Capita",
+    x = expression(log[10]("GDP per Capita")),
     y = "Life Expectancy (years)")
 ```
 
-$$ \hat{y} = `r round(models$estimate[1], 2)` + `r round(models$estimate[2], 2)`x $$
+$$ \hat{Life Expectancy} = `r round(models$estimate[1], 2)` + `r round(models$estimate[2], 2)`*\log_{10}(GDP) $$
 
--   Intercept: When the average GDP of Asia is 0 dollars, the average life expectancy in Asia is `r round(models$estimate[1], 2)` years.
+The slope coefficient of `r round(models$estimate[2], 2)` represents a `r round(models$estimate[2]*log10(1.01), 4)` year increase in predicted life expectancy for a one percent increase in GDP per capita. Alternatively a doubling GDP per capita is associated with a `r round(models$estimate[2], 2)` year increase in predicted life expectancy. 
 
--   Slope: For each additional 1 dollar increase in average GDP in Asia, the life expectancy of a person in Asia will increase by `r round(models$estimate[2], 2)` years.
+Although unrealistic, when $\log_{10}(GDP)$ is equal to zero, the intercept of `r round(models$estimate[1], 2)` represents the predicted life expectancy. 
 
 #### Africa
 
@@ -424,16 +419,15 @@ gdp_lex_mean |>
   labs(
     title = "log GDP per Capita vs Life Expectancy",
     subtitle = "Africa",
-    x = "log GDP per Capita",
+    x = expression(log[10]("GDP per Capita")),
     y = "Life Expectancy (years)")
 ```
 
+$$ \hat{Life Expectancy} = `r round(models$estimate[3], 2)` + `r round(models$estimate[4], 2)`*\log_{10}(GDP) $$
 
-$$ \hat{y} = `r round(models$estimate[3], 2)` + `r round(models$estimate[4], 2)`x $$
+The slope coefficient of `r round(models$estimate[4], 2)` represents a `r round(models$estimate[4]*log10(1.01), 4)` year increase in predicted life expectancy for a one percent increase in GDP per capita. Alternatively a doubling GDP per capita is associated with a `r round(models$estimate[4], 2)` year increase in predicted life expectancy. 
 
--   Intercept: When the average GDP of Africa is 0 dollars, the average life expectancy in Africa is `r round(models$estimate[3], 2)` years.
-
--   Slope: For each additional 1 dollar increase in average GDP in Africa, the life expectancy of a person in Africa will increase by `r round(models$estimate[4], 2)` years.
+Although unrealistic, when $\log_{10}(GDP)$ is equal to zero, the intercept of `r round(models$estimate[3], 2)` represents the predicted life expectancy. 
 
 #### Europe
 
@@ -448,15 +442,15 @@ gdp_lex_mean |>
   labs(
     title = "log GDP per Capita vs Life Expectancy",
     subtitle = "Europe",
-    x = "log GDP per Capita",
+    x = expression(log[10]("GDP per Capita")),
     y = "Life Expectancy (years)")
 ```
 
-$$ \hat{y} = `r round(models$estimate[5], 2)` + `r round(models$estimate[6], 2)`x $$
+$$ \hat{Life Expectancy} = `r round(models$estimate[5], 2)` + `r round(models$estimate[6], 2)`*\log_{10}(GDP) $$
 
--   Intercept: When the average GDP of Europe is 0 dollars, the average life expectancy in Europe is `r round(models$estimate[5], 2)` years.
+The slope coefficient of `r round(models$estimate[6], 2)` represents a `r round(models$estimate[6]*log10(1.01), 4)` year increase in predicted life expectancy for a one percent increase in GDP per capita. Alternatively a doubling GDP per capita is associated with a `r round(models$estimate[6], 2)` year increase in predicted life expectancy. 
 
--   Slope: For each additional 1 dollar increase in average GDP in Europe, the life expectancy of a person in Europe will increase by `r round(models$estimate[6], 2)` years.
+Although unrealistic, when $\log_{10}(GDP)$ is equal to zero, the intercept of `r round(models$estimate[5], 2)` represents the predicted life expectancy. 
 
 #### South America
 
@@ -471,15 +465,15 @@ gdp_lex_mean |>
   labs(
     title = "log GDP per Capita vs Life Expectancy",
     subtitle = "South America",
-    x = "log GDP per Capita",
+    x = expression(log[10]("GDP per Capita")),
     y = "Life Expectancy (years)")
 ```
 
-$$ \hat{y} = `r round(models$estimate[7], 2)` + `r round(models$estimate[8], 2)`x $$
+$$ \hat{Life Expectancy} = `r round(models$estimate[7], 2)` + `r round(models$estimate[8], 2)`*\log_{10}(GDP) $$
 
--   Intercept: When the average GDP of South America is 0 dollars, the average life expectancy in South America is `r round(models$estimate[7], 2)` years.
+The slope coefficient of `r round(models$estimate[8], 2)` represents a `r round(models$estimate[8]*log10(1.01), 4)` year increase in predicted life expectancy for a one percent increase in GDP per capita. Alternatively a doubling GDP per capita is associated with a `r round(models$estimate[8], 2)` year increase in predicted life expectancy. 
 
--   Slope: For each additional 1 dollar increase in average GDP in South America, the life expectancy of a person in South America will increase by `r round(models$estimate[8], 2)` years.
+Although unrealistic, when $\log_{10}(GDP)$ is equal to zero, the intercept of `r round(models$estimate[7], 2)` represents the predicted life expectancy. 
 
 #### North America
 
@@ -494,15 +488,15 @@ gdp_lex_mean |>
   labs(
     title = "log GDP per Capita vs Life Expectancy",
     subtitle = "North America",
-    x = "log GDP per Capita",
+    x = expression(log[10]("GDP per Capita")),
     y = "Life Expectancy (years)")
 ```
 
-$$ \hat{y} = `r round(models$estimate[9], 2)` + `r round(models$estimate[10], 2)`x $$
+$$ \hat{Life Expectancy} = `r round(models$estimate[9], 2)` + `r round(models$estimate[10], 2)`*\log_{10}(GDP) $$
 
--   Intercept: When the average GDP of North America is 0 dollars, the average life expectancy in North America is `r round(models$estimate[9], 2)` years.
+The slope coefficient of `r round(models$estimate[10], 2)` represents a `r round(models$estimate[10]*log10(1.01), 4)` year increase in predicted life expectancy for a one percent increase in GDP per capita. Alternatively a doubling GDP per capita is associated with a `r round(models$estimate[10], 2)` year increase in predicted life expectancy. 
 
--   Slope: For each additional 1 dollar increase in average GDP in North America, the life expectancy of a person in North America will increase by `r round(models$estimate[10], 2)` years.
+Although unrealistic, when $\log_{10}(GDP)$ is equal to zero, the intercept of `r round(models$estimate[9], 2)` represents the predicted life expectancy. 
 
 #### Oceania
 
@@ -517,15 +511,15 @@ gdp_lex_mean |>
   labs(
     title = "log GDP per Capita vs Life Expectancy",
     subtitle = "Oceania",
-    x = "log GDP per Capita",
+    x = expression(log[10]("GDP per Capita")),
     y = "Life Expectancy (years)")
 ```
 
-$$ \hat{y} = `r round(models$estimate[11], 2)` + `r round(models$estimate[12], 2)`x $$
+$$ \hat{Life Expectancy} = `r round(models$estimate[11], 2)` + `r round(models$estimate[12], 2)`*\log_{10}(GDP) $$
 
--   Intercept: When the average GDP of Oceania is 0 dollars, the average life expectancy in Oceania is `r round(models$estimate[11], 2)` years.
+The slope coefficient of `r round(models$estimate[12], 2)` represents a `r round(models$estimate[12]*log10(1.01), 4)` year increase in predicted life expectancy for a one percent increase in GDP per capita. Alternatively a doubling GDP per capita is associated with a `r round(models$estimate[12], 2)` year increase in predicted life expectancy. 
 
--   Slope: For each additional 1 dollar increase in average GDP in Oceania, the life expectancy of a person in Oceania will increase by `r round(models$estimate[12], 2)` years.
+Although unrealistic, when $\log_{10}(GDP)$ is equal to zero, the intercept of `r round(models$estimate[11], 2)` represents the predicted life expectancy. 
 :::
 
 ## 2.3 Model Fit
@@ -556,7 +550,10 @@ tibble(
 
 Our table demonstrates that the model provides a moderate fit to the data. Our proportion of variance, or R² value of `r round(r_squared, 4)`, indicates about `r round(r_squared, 4)*100`% of the total variation in life expectancy across countries is explained by our GDP based model. This suggests that GDP plays a role in determining life expectancy, but is not the sole factor. The remaining `r 100 - round(r_squared, 4)*100`% of the variation must be explained by other factors, such as healthcare spending, education levels, and environmental factors.
 
+# 3 Simulation
+
 ## 3.1 Visualizing Simulations from the Model
+
 ```{r}
 # predict function and random errors
 gdplex_pred <- predict(gdp_lex_lm)
@@ -584,7 +581,7 @@ p1 <- ggplot(full_data, aes(x = avg_gdp, y = avg_life_expectancy, color = Contin
   scale_color_manual(values = continent_colors) +
   theme_minimal() +
   labs(title = "Observed Data: GDP vs Life Expectancy",
-      x = "log GDP per Capita",
+      x = expression(log[10]("GDP per Capita")),
       y = "Life Expectancy (years)") +
     theme(
     plot.title = element_text(face = "bold", size = 20),
@@ -598,7 +595,7 @@ p2 <- ggplot(full_data, aes(x = avg_gdp, y = avg_simulated_life_expectancy, colo
   scale_color_manual(values = continent_colors) +
   theme_minimal() +
   labs(title = "Simulated Data: GDP vs Life Expectancy",
-      x = "log GDP per Capita",
+      x = expression(log[10]("GDP per Capita")),
       y = "Simulated Life Expectancy (years)") +
   theme(
     plot.title = element_text(face = "bold", size = 20),
@@ -652,3 +649,5 @@ ggplot(sim_results, aes(x = r2)) +
     y = "Frequency"
   )
 ```
+
+# Conclusion
