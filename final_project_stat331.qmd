@@ -406,7 +406,7 @@ $$ \hat{Life\space Expectancy} = `r round(models$estimate[1], 2)` + `r round(mod
 
 The slope coefficient of `r round(models$estimate[2], 2)` represents a `r round(models$estimate[2]*log10(1.01), 4)` year increase in predicted life expectancy for a one percent increase in GDP per capita. Alternatively a doubling GDP per capita is associated with a `r round(models$estimate[2], 2)` year increase in predicted life expectancy. 
 
-Although unrealistic, when $log_{10}(GDP\space per\space capita)$ is equal to zero, the intercept of `r round(models$estimate[1], 2)` represents the predicted life expectancy. 
+Although unrealistic, when log<sub>10</sub>(GDP per capita) is equal to zero, the intercept of `r round(models$estimate[1], 2)` represents the predicted life expectancy. 
 
 #### Africa
 
@@ -429,7 +429,7 @@ $$ \hat{Life\space Expectancy} = `r round(models$estimate[3], 2)` + `r round(mod
 
 The slope coefficient of `r round(models$estimate[4], 2)` represents a `r round(models$estimate[4]*log10(1.01), 4)` year increase in predicted life expectancy for a one percent increase in GDP per capita. Alternatively a doubling GDP per capita is associated with a `r round(models$estimate[4], 2)` year increase in predicted life expectancy. 
 
-Although unrealistic, when $\log_{10}(GDP\space per\space capita)$ is equal to zero, the intercept of `r round(models$estimate[3], 2)` represents the predicted life expectancy. 
+Although unrealistic, when log<sub>10</sub>(GDP per capita) is equal to zero, the intercept of `r round(models$estimate[3], 2)` represents the predicted life expectancy. 
 
 #### Europe
 
@@ -452,7 +452,7 @@ $$ \hat{Life\space Expectancy} = `r round(models$estimate[5], 2)` + `r round(mod
 
 The slope coefficient of `r round(models$estimate[6], 2)` represents a `r round(models$estimate[6]*log10(1.01), 4)` year increase in predicted life expectancy for a one percent increase in GDP per capita. Alternatively a doubling GDP per capita is associated with a `r round(models$estimate[6], 2)` year increase in predicted life expectancy. 
 
-Although unrealistic, when $\log_{10}(GDP\space per\space capita)$ is equal to zero, the intercept of `r round(models$estimate[5], 2)` represents the predicted life expectancy. 
+Although unrealistic, when log<sub>10</sub>(GDP per capita) is equal to zero, the intercept of `r round(models$estimate[5], 2)` represents the predicted life expectancy. 
 
 #### South America
 
@@ -475,7 +475,7 @@ $$ \hat{Life\space Expectancy} = `r round(models$estimate[7], 2)` + `r round(mod
 
 The slope coefficient of `r round(models$estimate[8], 2)` represents a `r round(models$estimate[8]*log10(1.01), 4)` year increase in predicted life expectancy for a one percent increase in GDP per capita. Alternatively a doubling GDP per capita is associated with a `r round(models$estimate[8], 2)` year increase in predicted life expectancy. 
 
-Although unrealistic, when $\log_{10}(GDP\space per\space capita)$ is equal to zero, the intercept of `r round(models$estimate[7], 2)` represents the predicted life expectancy. 
+Although unrealistic, when log<sub>10</sub>(GDP per capita) is equal to zero, the intercept of `r round(models$estimate[7], 2)` represents the predicted life expectancy. 
 
 #### North America
 
@@ -498,7 +498,7 @@ $$ \hat{Life\space Expectancy} = `r round(models$estimate[9], 2)` + `r round(mod
 
 The slope coefficient of `r round(models$estimate[10], 2)` represents a `r round(models$estimate[10]*log10(1.01), 4)` year increase in predicted life expectancy for a one percent increase in GDP per capita. Alternatively a doubling GDP per capita is associated with a `r round(models$estimate[10], 2)` year increase in predicted life expectancy. 
 
-Although unrealistic, when $\log_{10}(GDP\space per\space capita)$ is equal to zero, the intercept of `r round(models$estimate[9], 2)` represents the predicted life expectancy. 
+Although unrealistic, when log<sub>10</sub>(GDP per capita) is equal to zero, the intercept of `r round(models$estimate[9], 2)` represents the predicted life expectancy. 
 
 #### Oceania
 
@@ -521,7 +521,7 @@ $$ \hat{Life\space Expectancy} = `r round(models$estimate[11], 2)` + `r round(mo
 
 The slope coefficient of `r round(models$estimate[12], 2)` represents a `r round(models$estimate[12]*log10(1.01), 4)` year increase in predicted life expectancy for a one percent increase in GDP per capita. Alternatively a doubling GDP per capita is associated with a `r round(models$estimate[12], 2)` year increase in predicted life expectancy. 
 
-Although unrealistic, when $\log_{10}(GDP\space per\space capita)$ is equal to zero, the intercept of `r round(models$estimate[11], 2)` represents the predicted life expectancy. 
+Although unrealistic, when log<sub>10</sub>(GDP per capita) is equal to zero, the intercept of `r round(models$estimate[11], 2)` represents the predicted life expectancy. 
 :::
 
 ## 2.3 Model Fit
@@ -610,7 +610,9 @@ p2 <- ggplot(full_data, aes(x = avg_gdp, y = avg_simulated_life_expectancy, colo
 p1 + p2
 ```
 
-From the graphs above, it can be seem that both the observed and the simulated data have a positive, linear relationship between life expectancy and $\log_{10}(GDP\space per\space capita)$
+From the graphs above, it can be seem that both the observed and the simulated data have a strong, positive, and linear relationship between life expectancy and log<sub>10</sub>(GDP per capita). This trend suggests that as GDP per capita increases, life expectancy also increases. The black, fitted regression line and grey shaded confidence interval are similar in both plots indicating that both data sets have similar variability. In both plots the distribution of points by continent are consistent with lower income continents, such as Africa, clustering around the bottom of the line. This is the same with wealthier continents such as Europe and North America, which appear at the higher end of the trend line in both graphs.  
+
+Although they the observed and simulated plots are similar, one difference is the spread of the points. The simulated data appears to have more constrained spread, with points falling fairly symmetrically on either sides of the trend line. This suggests that the model was not able to fully capture the variability present in the observed data. It can also be seen that the observed data contains outlines while the simulated data only replicates the main trend, but not the extreme observations. 
 
 ## 3.2 Generating Multiple Predictive Checks
 
@@ -652,7 +654,8 @@ ggplot(sim_results, aes(x = r2)) +
   labs(
     title = "Distribution of R² Values from 1000 Simulated Datasets",
     x = "R² Value",
-    y = "Frequency"
+    y = "",
+    subtitle = "Frequency"
   )
 ```
 
