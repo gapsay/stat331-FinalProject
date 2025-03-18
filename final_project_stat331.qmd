@@ -657,6 +657,10 @@ ggplot(sim_results, aes(x = r2)) +
     y = "",
     subtitle = "Frequency"
   )
+
+
 ```
+
+The shape of the R² distribution is roughly normal, with a mean of `r round(mean(r2_values), 2)`, median of `r round(median(r2_values), 2)` and a standard deviation of `r round(sd(r2_values), 4)`. The observed R² (red dashed line) of `r round(r_squared, 4)` from our actual data is higher than all of the simulated values. This suggests that the true relationship in the observed data is stronger than what the simulation produces. In other words the model is not a great representation of the actual data since it underestimates the strength of the relationship between life expectancy and log<sub>10</sub>(GDP per capita). 
 
 # Conclusion
