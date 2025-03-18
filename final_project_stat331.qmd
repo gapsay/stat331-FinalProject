@@ -629,12 +629,15 @@ sim_and_calc_rsquared <- function(x) {
   # Create dataset with observed and simulated values
   sim_data <- tibble(
     observed_life_expectancy = gdp_lex_mean$avg_life_expectancy,
-    simulated_life_expectancy = sim_life_exp
+    simulated_life_expectancy = sim_life_exp,
+    avg_gdp = gdp_lex_mean$avg_gdp
   ) |>
   drop_na()
 
   # Regress the observed values against simulated ones
-  sim_model <- lm(observed_life_expectancy ~ simulated_life_expectancy, data = sim_data)
+  #sim_model <- lm(observed_life_expectancy ~ simulated_life_expectancy, data = sim_data)
+  sim_model <- lm(simulated_life_expectancy ~ avg_gdp, data = sim_data)
+
 
   r_squared <- glance(sim_model)$r.squared
 
