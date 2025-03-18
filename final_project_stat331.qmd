@@ -29,11 +29,11 @@ library(kableExtra)
 library(scales)
 library(bibtex)
 library(dplyr)
+library(patchwork)
 ```
 
 ```{r seed}
 #| include: false
-
 set.seed(47984)
 ```
 
@@ -160,7 +160,10 @@ gdp_lex <- left_join(gdp_lex, continents,
   by = c("country" = "combined")
 ) |>
   select(-country, -gdp_name) |>
-  mutate(Continent = as.factor(Continent))
+  mutate(Continent = as.factor(Continent),
+         year = as.integer(year), 
+         log_gdp = log(gdp)) |>
+  drop_na()
 ```
 
 After cleaning up each data set, we had to join the two together by our observational unit, country. We hypothesize that as GDP increases, life expectancy will also begin to increase, as a higher GDP correlates to better infrastructure and more/better access to healthcare and medicine.
@@ -182,13 +185,15 @@ continent_colors <- c(
   "Oceania" = "#66a61e",
   "South America" = "#e6ab02"
 )
+
 gdp_lex_mean <- gdp_lex |>
   group_by(Country) |>
   summarize(
-    avg_gdp = mean(gdp, na.rm = TRUE),
-    avg_life_expectancy = mean(life_expectancy, na.rm = TRUE)
+    avg_gdp = mean(log_gdp, na.rm = TRUE),
+    avg_life_expectancy = mean(life_expectancy, na.rm = TRUE),
+    Continent = first(Continent)
   ) |>
-  left_join(gdp_lex, join_by(Country == Country)) # add back continents
+  mutate(Continent = as.factor(Continent))
 
 ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy, color = Continent)) +
   scale_color_manual(values = continent_colors) +
@@ -212,21 +217,6 @@ ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy, color = Continent
     legend.title = element_text(size = 16),
     legend.text = element_text(size = 14)
   )
-```
-```{r}
-gdp_lex <- gdp_lex |>
-  mutate(year = as.integer(year), 
-         log_gdp = log(gdp)) |>
-  mutate(year = 1800 + (year - min(year))) |>
-  drop_na()
-
-gdp_lex_mean <- gdp_lex |>
-  group_by(Country) |>
-  summarize(
-    avg_gdp = mean(log_gdp, na.rm = TRUE),
-    avg_life_expectancy = mean(life_expectancy, na.rm = TRUE)
-  ) |>
-  left_join(gdp_lex, join_by(Country == Country)) # add back continents
 ```
 
 ```{r}
@@ -572,49 +562,93 @@ Our table demonstrates that the model provides a moderate fit to the data. Our p
 gdplex_pred <- predict(gdp_lex_lm)
   
 gdplex_sig <- sigma(gdp_lex_lm)
-gdplex_sig
-```
-```{r}
-rand_error <- function(x, mean = 0, sd){
-  x + rnorm(length(x),
-            mean,
-            sd)
-}
 
-simulated <- tibble(sim_gdplex = rand_error(gdplex_pred,
-                                            sd = gdplex_sig))
+simulated_data = tibble(simulated_life_expectancy = gdplex_pred + rnorm(length(gdplex_pred), mean = 0, sd = gdplex_sig))
+
+full_data <- gdp_lex_mean |>
+  bind_cols(simulated_data) |>
+  group_by(Country) |>
+  summarize(avg_simulated_life_expectancy = mean(simulated_life_expectancy, na.rm = TRUE)) |>
+  left_join(gdp_lex_mean, join_by(Country == Country))
+
 ```
 
 ```{r}
 #| fig-width: 12
 #| fig.height: 8
-full_data <- gdp_lex_mean |>
-  bind_cols(simulated) |>
-  group_by(Country) |>
-  summarize(avg_sim_gdp = mean(sim_gdplex, na.rm = TRUE)) |>
-  left_join(gdp_lex_mean, join_by(Country == Country))
 
-ggplot(full_data, aes(x = avg_gdp, y = avg_sim_gdp))+
+# Create side-by-side plots
+p1 <- ggplot(full_data, aes(x = avg_gdp, y = avg_life_expectancy, color = Continent)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "black") +
   scale_color_manual(values = continent_colors) +
-  geom_point(aes(colour = Continent)) +
-  geom_smooth(method = "lm", colour = "black") +
-  scale_alpha(range = c(0.2, 0.9), guide = "none") +
+  theme_minimal() +
+  labs(title = "Observed Data: GDP vs Life Expectancy",
+      x = "log GDP per Capita",
+      y = "Life Expectancy (years)") +
+    theme(
+    plot.title = element_text(face = "bold", size = 20),
+    axis.title = element_text(size = 16),
+    axis.text = element_text(size = 14)
+  )
+
+p2 <- ggplot(full_data, aes(x = avg_gdp, y = avg_simulated_life_expectancy, color = Continent)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "black") +
+  scale_color_manual(values = continent_colors) +
+  theme_minimal() +
+  labs(title = "Simulated Data: GDP vs Life Expectancy",
+      x = "log GDP per Capita",
+      y = "Simulated Life Expectancy (years)") +
+  theme(
+    plot.title = element_text(face = "bold", size = 20),
+    axis.title = element_text(size = 16),
+    axis.text = element_text(size = 14)
+  )
+
+p1 + p2
+```
+
+## 3.2 Generating Multiple Predictive Checks
+
+```{r}
+sim_and_calc_rsquared <- function(x) {
+  predicted_values <- predict(gdp_lex_lm)
+  
+  # Generate simulated values based on our model
+  sim_life_exp <- predicted_values + 
+                  rnorm(length(predicted_values), 
+                        mean = 0, 
+                        sd = sigma(gdp_lex_lm))
+
+  # Create dataset with observed and simulated values
+  sim_data <- tibble(
+    observed_life_expectancy = gdp_lex_mean$avg_life_expectancy,
+    simulated_life_expectancy = sim_life_exp
+  ) |>
+  drop_na()
+
+  # Regress the observed values against simulated ones
+  sim_model <- lm(observed_life_expectancy ~ simulated_life_expectancy, data = sim_data)
+
+  r_squared <- glance(sim_model)$r.squared
+
+  return(r_squared)
+}
+
+r2_values <- map_dbl(1:1000, sim_and_calc_rsquared)
+
+sim_results <- enframe(r2_values, name = NULL, value = "r2")
+
+# Visualization of R² distribution
+ggplot(sim_results, aes(x = r2)) +
+  geom_histogram(bins = 30, fill = "steelblue", alpha = 0.7) +
+  # our actual r_squared value from our original lm model
+  geom_vline(xintercept = r_squared, color = "red", linetype = "dashed", size = 1) +
   theme_minimal() +
   labs(
-    title = "GDP per Capita vs Life Expectancy",
-    subtitle = "Non-linear relationship with confidence intervals by continent",
-    x = "GDP per Capita (log scale)",
-    y = "Life Expectancy (years)"
-  ) +
-  theme(
-    legend.position = "right",
-    plot.title = element_text(face = "bold", size = 24),
-    axis.title = element_text(size = 18),
-    plot.subtitle = element_text(size = 18),
-    plot.caption = element_text(size = 14),
-    axis.text.x = element_text(size = 14),
-    axis.text.y = element_text(size = 14),
-    legend.title = element_text(size = 16),
-    legend.text = element_text(size = 14)
+    title = "Distribution of R² Values from 1000 Simulated Datasets",
+    x = "R² Value",
+    y = "Frequency"
   )
 ```
