@@ -667,3 +667,11 @@ ggplot(sim_results, aes(x = r2)) +
 The shape of the R² distribution is roughly normal, with a mean of `r round(mean(r2_values), 2)`, median of `r round(median(r2_values), 2)` and a standard deviation of `r round(sd(r2_values), 4)`. The observed R² (red dashed line) of `r round(r_squared, 4)` from our actual data is higher than all of the simulated values. This suggests that the true relationship in the observed data is stronger than what the simulation produces. In other words the model is not a great representation of the actual data since it underestimates the strength of the relationship between life expectancy and log<sub>10</sub>(GDP per capita). 
 
 # Conclusion
+
+Throughout this report we sought out to seek an understanding on how economic factors on health, such as GDP per capita can be used as a predictor of life expectancy.
+
+Based on our findings we are able to conclude that in general, there is a moderate, positive relationship between GDP per Capita and life expectancy. Meaning as the GDP per Capita increases, the life expectancy of a country, and the overall continent is also expected to increase. Our linear regression model shows that after log transforming GDP per Capita, a 1% increase in GDP leads to an increase of `r round(tidy(gdp_lex_lm)$estimate[2]*log10(1.01), 2)` years in life expectancy. 
+
+With our predicted model fit, `r round(r_squared, 4)*100`% of the total variance can be attributed by GDP per Capita, meaning that GDP is not the sole factor of increasing life expectancy. One other factor can be attributed to region. Looking back at the individual continent's regression model,  Europe and North America have the highest slopes, then followed by Oceania. This makes sense as these continents have a higher density of wealthy countries with better infrastructure and more access to different industries compared to the other remaining, which have a lot higher variability.
+
+Our simulation model shows a similar trend to our observed, a moderately positive relationship, with Europe and North America at the higher ends of the regression line. One key difference is that the spread is more constrained in the simulated data compared to our observed.
