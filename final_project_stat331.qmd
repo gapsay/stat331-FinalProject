@@ -40,6 +40,8 @@ set.seed(47984)
 
 All code, raw data, and project files are available in our [GitHub Repository](https://github.com/gapsay/stat331-FinalProject/tree/main). Feel free to explore or replicate our analysis!
 
+Life expectancy is a key indicator of a population's overall health. It can be attributed to various economic, social, and environmental factors. By exploring a nation's wealth, we would be able to analyze how economic prosperity impacts the longevity of the overall population.
+
 # 1 Project Proposal + Data
 
 This analysis utilizes the life expectancy and the gross domestic product (GDP) datasets sourced from Gapminder, a non-profit organization whose mission “is to fight devastating ignorance with a fact-based world view everyone could understand” [-@gapminderAbout]. Their site provides data sets collected from many reputable sources and interactive visualizations on important world topics. Additionally, we used a countries by continent dataset from Daina Bouquin posted on Kaggle [-@kaggleCountriesByContinent]. The dataset provides continent classifications for countries, allowing us conduct continent-specific analysis in our study.
