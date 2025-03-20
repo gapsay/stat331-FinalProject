@@ -217,7 +217,7 @@ ggplot(gdp_lex_mean, aes(x = avg_gdp, y = avg_life_expectancy, color = Continent
 ```{r}
 #| fig-width: 12
 #| fig.height: 8
-#| eval: false
+
 gdp_lex <- gdp_lex |> 
    mutate(year = as.integer(year)) |> 
    mutate(year = 1800 + (year - min(year))) |> 
@@ -236,7 +236,9 @@ ggplot(gdp_lex, aes(log_gdp, life_expectancy, color = Continent)) +
     plot.subtitle = element_text(size = 18),
     plot.caption = element_text(size = 14),
     axis.text.x = element_text(size = 14),
-    axis.text.y = element_text(size = 14)
+    axis.text.y = element_text(size = 14),
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 14)
   ) +
   labs(
     title = "GDP per Capita vs Life Expectancy by Continent",
