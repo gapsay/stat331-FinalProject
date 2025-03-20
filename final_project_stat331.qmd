@@ -254,7 +254,7 @@ ggplot(gdp_lex, aes(log_gdp, life_expectancy, color = Continent)) +
   ease_aes("linear")
 ```
 
-After seeing the exponential relationship between Life Expectancy and GDP per Capita, we decided to perform a base ten log transformation on GDP, to more accurately fit the linear model. The plot of Life Expectancy and log<sub>10</sub>(GDP per Capita) is displayed above. 
+Initially we chose to average both GDP per Capita and Life expectancy, so we would have only one observation per country. Then, after seeing the exponential relationship between Life Expectancy and GDP per Capita, we also decided to perform a base ten log transformation on GDP, to more accurately fit the linear model. The plot of Life Expectancy and log<sub>10</sub>(GDP per Capita) is displayed below.  
 
 ## 2.2 Linear Regression
 
