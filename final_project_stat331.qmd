@@ -37,11 +37,6 @@ set.seed(47984)
 ```
 
 
-
-### Reproducibility
-
-All code, raw data, and project files are available in our [GitHub Repository](https://github.com/gapsay/stat331-FinalProject/tree/main). Feel free to explore or replicate our analysis!
-
 # Introduction
 
 Life expectancy is a key indicator of a population's overall health. It can be attributed to various economic, social, and environmental factors. By exploring a nation's wealth, we would be able to analyze how economic prosperity impacts the longevity of the overall population.
@@ -676,3 +671,7 @@ Based on our findings we are able to conclude that in general, there is a modera
 With our predicted model fit, `r round(r_squared, 4)*100` percent of the total variance can be attributed by GDP per Capita, meaning that GDP is not the sole factor of increasing life expectancy. One other factor can be attributed to region. Looking back at the individual continent's regression model,  Europe and North America have the highest slopes, then followed by Oceania. This makes sense as these continents have a higher density of wealthy countries with better infrastructure and more access to different industries compared to the other remaining, which have a lot higher variability.
 
 Our simulation model shows a similar trend to our observed, a moderately positive relationship, with Europe and North America at the higher ends of the regression line. One key difference is that the spread is more constrained in the simulated data compared to our observed.
+
+### Reproducibility
+
+All code, raw data, and project files are available in our [GitHub Repository](https://github.com/gapsay/stat331-FinalProject/tree/main). Feel free to explore or replicate our analysis!
