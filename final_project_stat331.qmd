@@ -309,7 +309,7 @@ gdp_lex_lm |>
 
 The estimated regression model: $$ \hat{Life\space Expectancy} = `r round(tidy(gdp_lex_lm)$estimate[1], 2)` + `r round(tidy(gdp_lex_lm)$estimate[2], 2)`*\log_{10}(GDP\space per\space Capita) $$
 
-corresponds to the scatter plot above of Life Expectancy vs. log GDP per Capita. $\hat{Life\space Expectancy}$ represents the predicted life expectancy (in years) and the $log_{10}(GDP\space per\space Capita)$ represents the log-transformed GDP per Capita. When the log-transformed GDP is 0 dollars, the estimated life expectancy is `r round(tidy(gdp_lex_lm)$estimate[1], 2)` years. However, this value is not meaningful since real-world GDP per Capita values are always positive, making a log-transformed value of zero unrealistic. The coefficient of the slope, `r round(tidy(gdp_lex_lm)$estimate[2], 2)`, represents the expected change in life expectancy for a percentage change in GDP per Capita. In other words, a 1% increase in GDP per Capita leads to an increase of approximately `r round(tidy(gdp_lex_lm)$estimate[2]*log10(1.01), 2)` years in life expectancy.
+corresponds to the scatter plot above of Life Expectancy vs. log GDP per Capita. $\hat{Life\space Expectancy}$ represents the predicted life expectancy (in years) and the $log_{10}(GDP\space per\space Capita)$ represents the log-transformed GDP per Capita. When the log-transformed GDP is 0 dollars, the estimated life expectancy is `r round(tidy(gdp_lex_lm)$estimate[1], 2)` years. However, this value is not meaningful since real-world GDP per Capita values are always positive, making a log-transformed value of zero unrealistic. The coefficient of the slope, `r round(tidy(gdp_lex_lm)$estimate[2], 2)`, represents the expected change in life expectancy for a double in GDP per Capita. In other words, a one percent increase in GDP per Capita leads to an increase of approximately `r round(tidy(gdp_lex_lm)$estimate[2]*log10(1.01), 4)` years in life expectancy.
 
 ### Estimated Regression Models per Continent
 
@@ -547,7 +547,7 @@ tibble(
 
 ```
 
-Our table demonstrates that the model provides a moderate fit to the data. Our proportion of variance, or R² value of `r round(r_squared, 4)`, indicates about `r round(r_squared, 4)*100`% of the total variation in life expectancy across countries is explained by our GDP based model. This suggests that GDP plays a role in determining life expectancy, but is not the sole factor. The remaining `r 100 - round(r_squared, 4)*100`% of the variation must be explained by other factors, such as healthcare spending, education levels, and environmental factors.
+Our table demonstrates that the model provides a moderate fit to the data. Our proportion of variance, or R² value of `r round(r_squared, 4)`, indicates about `r round(r_squared, 4)*100` percent of the total variation in life expectancy across countries is explained by our GDP based model. This suggests that GDP plays a role in determining life expectancy, but is not the sole factor. The remaining `r 100 - round(r_squared, 4)*100` percent of the variation must be explained by other factors, such as healthcare spending, education levels, and environmental factors.
 
 # 3 Simulation
 
@@ -607,9 +607,9 @@ p2 <- ggplot(full_data, aes(x = avg_gdp, y = avg_simulated_life_expectancy, colo
 p1 + p2
 ```
 
-From the graphs above, it can be seem that both the observed and the simulated data have a strong, positive, and linear relationship between life expectancy and log<sub>10</sub>(GDP per Capita). This trend suggests that as GDP per Capita increases, life expectancy also increases. The black, fitted regression line and grey shaded confidence interval are similar in both plots indicating that both data sets have similar variability. In both plots the distribution of points by continent are consistent with lower income continents, such as Africa, clustering around the bottom of the line. This is the same with wealthier continents such as Europe and North America, which appear at the higher end of the trend line in both graphs.  
+From the graphs above, it can be seem that both the observed and the simulated data have a strong, positive, and linear relationship between life expectancy and log<sub>10</sub>(GDP per Capita). This trend suggests that as GDP per Capita increases, life expectancy also increases. The black, fitted regression line and grey shaded confidence interval are similar in both plots, indicating that both data sets have similar rate of change and variability. In both plots the distribution of points by continent are consistent with lower income continents, such as Africa, clustering around the bottom of the line. This is the same with wealthier continents such as Europe and North America, which appear at the higher end of the trend line in both graphs.  
 
-Although they the observed and simulated plots are similar, one difference is the spread of the points. The simulated data appears to have more constrained spread, with points falling fairly symmetrically on either sides of the trend line. This suggests that the model was not able to fully capture the variability present in the observed data. It can also be seen that the observed data contains outlines while the simulated data only replicates the main trend, but not the extreme observations. 
+Although they the observed and simulated plots are similar, one difference is the spread of the points. The simulated data appears to have more constrained spread, with points falling fairly symmetrically on either sides of the trend line. This suggests that the model was not able to fully capture the variability present in the observed data. It can also be seen that the observed data contains outliers while the simulated data only replicates the main trend, but not the extreme observations. 
 
 ## 3.2 Generating Multiple Predictive Checks
 
@@ -660,7 +660,7 @@ ggplot(sim_results, aes(x = r2)) +
 
 ```
 
-The shape of the R² distribution is roughly normal, with a mean of `r round(mean(r2_values), 2)`, median of `r round(median(r2_values), 2)` and a standard deviation of `r round(sd(r2_values), 4)`. The observed R² (red dashed line) of `r round(r_squared, 4)` from our actual data is higher than all of the simulated values. This suggests that the true relationship in the observed data is stronger than what the simulation produces. In other words the model is only a decent representation of the actual data since it underestimates the strength of the relationship between life expectancy and log<sub>10</sub>(GDP per Capita).This distribution shows that our observed model is a decent  representation, as the distribution of the simulated R² values fall between `r round(quantile(r2_values, .25), 4)` and `r round(quantile(r2_values, .75), 4)`. 
+The shape of the R² distribution is roughly normal, with a mean of `r round(mean(r2_values), 2)`, median of `r round(median(r2_values), 2)` and a standard deviation of `r round(sd(r2_values), 4)`. The observed R² (red dashed line) of `r round(r_squared, 4)` from our actual data is higher than all of the simulated values. This suggests that the true relationship in the observed data is stronger than what the simulation produces. In other words the model is only a decent representation of the actual data, with majority distribution of the simulated R² values falling between `r round(mean(r2_values) - 2*sd(r2_values), 2)` and `r round(mean(r2_values) + 2*sd(r2_values), 4)`, but it underestimates the strength of the relationship between life expectancy and log<sub>10</sub>(GDP per Capita).
 
 # Conclusion
 
