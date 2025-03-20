@@ -36,9 +36,13 @@ library(patchwork)
 set.seed(47984)
 ```
 
+
+
 ### Reproducibility
 
 All code, raw data, and project files are available in our [GitHub Repository](https://github.com/gapsay/stat331-FinalProject/tree/main). Feel free to explore or replicate our analysis!
+
+# Introduction
 
 Life expectancy is a key indicator of a population's overall health. It can be attributed to various economic, social, and environmental factors. By exploring a nation's wealth, we would be able to analyze how economic prosperity impacts the longevity of the overall population.
 
@@ -667,7 +671,7 @@ ggplot(sim_results, aes(x = r2)) +
 
 ```
 
-The shape of the R² distribution is roughly normal, with a mean of `r round(mean(r2_values), 2)`, median of `r round(median(r2_values), 2)` and a standard deviation of `r round(sd(r2_values), 4)`. The observed R² (red dashed line) of `r round(r_squared, 4)` from our actual data is higher than all of the simulated values. This suggests that the true relationship in the observed data is stronger than what the simulation produces. In other words the model is only a decent representation of the actual data since it underestimates the strength of the relationship between life expectancy and log<sub>10</sub>(GDP per Capita). 
+The shape of the R² distribution is roughly normal, with a mean of `r round(mean(r2_values), 2)`, median of `r round(median(r2_values), 2)` and a standard deviation of `r round(sd(r2_values), 4)`. The observed R² (red dashed line) of `r round(r_squared, 4)` from our actual data is higher than all of the simulated values. This suggests that the true relationship in the observed data is stronger than what the simulation produces. In other words the model is only a decent representation of the actual data since it underestimates the strength of the relationship between life expectancy and log<sub>10</sub>(GDP per Capita).This distribution shows that our observed model is a decent  representation, as the distribution of the simulated R² values fall between `r round(quantile(r2_values, .25), 4)` and `r round(quantile(r2_values, .75), 4)`. 
 
 # Conclusion
 
